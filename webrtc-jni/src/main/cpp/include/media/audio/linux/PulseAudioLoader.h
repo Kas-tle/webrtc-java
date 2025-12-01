@@ -18,11 +18,8 @@
 #define PULSE_AUDIO_LOADER_H
 
 #include <pulse/pulseaudio.h>
-
 #include <dlfcn.h>
-
 #include <string>
-
 #include "Exception.h"
 
 namespace jni 

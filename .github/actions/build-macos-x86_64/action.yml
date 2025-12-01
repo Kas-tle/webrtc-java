@@ -58,13 +58,13 @@ runs:
     - name: Archive webrtc-java
       uses: actions/upload-artifact@v5
       with:
-        name: webrtc-java
+        name: webrtc-java-${{ inputs.platform-name }}
         path: webrtc/target/*.jar
 
     - name: Archive webrtc-java-jni
       uses: actions/upload-artifact@v5
       with:
-        name: webrtc-java-${{ inputs.platform-name }}
+        name: webrtc-java-jni-${{ inputs.platform-name }}
         path: webrtc-jni/target/*.jar
         
     - name: Deploy
