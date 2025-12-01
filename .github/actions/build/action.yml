@@ -62,8 +62,20 @@ runs:
       run: mvn -B jar:jar surefire:test
       shell: bash
 
+    - name: Archive webrtc-java
+      uses: actions/upload-artifact@v5
+      with:
+        name: webrtc-java
+        path: webrtc/target/*.jar
+
+    - name: Archive webrtc-java-jni
+      uses: actions/upload-artifact@v5
+      with:
+        name: webrtc-java-${{ inputs.platform-name }}
+        path: webrtc-jni/target/*.jar
+
     - name: Deploy
-      if: ${{ github.event_name != 'pull_request' }}
+      if: ${{ github.event_name != 'pull_request' && github.repository == 'devopvoid/webrtc-java' }}
       env:
         MAVEN_USERNAME: ${{ inputs.maven-username }}
         MAVEN_TOKEN: ${{ inputs.maven-password }}
