@@ -24,6 +24,7 @@
 #include "JavaUtils.h"
 
 #include "api/create_peerconnection_factory.h"
+#include "modules/audio_device/include/audio_device.h"
 
 JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_initialize
 (JNIEnv * env, jobject caller)
@@ -48,11 +49,16 @@ JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_initialize
             throw jni::Exception("Start worker thread failed");
         }
 
+        auto task_queue_factory = webrtc::CreateDefaultTaskQueueFactory();
+        auto adm = webrtc::AudioDeviceModule::Create(
+            webrtc::AudioDeviceModule::kDummyAudio, 
+            task_queue_factory.get());
+
         auto factory = webrtc::CreatePeerConnectionFactory(
             networkThread.get(),
             workerThread.get(),
             signalingThread.get(),
-            nullptr, // AudioDeviceModule
+            adm,     // AudioDeviceModule
             nullptr, // AudioEncoderFactory
             nullptr, // AudioDecoderFactory
             nullptr, // VideoEncoderFactory
