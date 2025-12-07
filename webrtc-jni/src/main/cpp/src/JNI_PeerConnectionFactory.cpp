@@ -24,8 +24,6 @@
 #include "JavaUtils.h"
 
 #include "api/create_peerconnection_factory.h"
-#include "api/environment/environment_factory.h"
-#include "api/HeadlessAudioDeviceModule.h"
 
 JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_initialize
 (JNIEnv * env, jobject caller)
@@ -50,24 +48,16 @@ JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_initialize
             throw jni::Exception("Start worker thread failed");
         }
 
-        webrtc::EnvironmentFactory env_factory;
-        webrtc::Environment rtc_env = env_factory.Create();
-
-        auto adm = jni::HeadlessAudioDeviceModule::Create(rtc_env);
-
         webrtc::PeerConnectionFactoryDependencies dependencies;
+        
         dependencies.network_thread = networkThread.release();
         dependencies.worker_thread = workerThread.release();
         dependencies.signaling_thread = signalingThread.release();
-        dependencies.adm = std::move(adm);
 
         auto factory = webrtc::CreateModularPeerConnectionFactory(std::move(dependencies));
 
         if (factory != nullptr) {
             SetHandle(env, caller, factory.release());
-            SetHandle(env, caller, "networkThreadHandle", nullptr);
-            SetHandle(env, caller, "signalingThreadHandle", nullptr);
-            SetHandle(env, caller, "workerThreadHandle", nullptr);
         }
         else {
             throw jni::Exception("Create PeerConnectionFactory failed");
@@ -84,6 +74,10 @@ JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_dispose
 	webrtc::PeerConnectionFactoryInterface * factory = GetHandle<webrtc::PeerConnectionFactoryInterface>(env, caller);
 	CHECK_HANDLE(factory);
 
+	webrtc::Thread * networkThread = GetHandle<webrtc::Thread>(env, caller, "networkThreadHandle");
+	webrtc::Thread * signalingThread = GetHandle<webrtc::Thread>(env, caller, "signalingThreadHandle");
+	webrtc::Thread * workerThread = GetHandle<webrtc::Thread>(env, caller, "workerThreadHandle");
+
 	webrtc::RefCountReleaseStatus status = factory->Release();
 
 	if (status != webrtc::RefCountReleaseStatus::kDroppedLastRef) {
@@ -91,6 +85,26 @@ JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_dispose
 	}
 
 	SetHandle<std::nullptr_t>(env, caller, nullptr);
+
+	factory = nullptr;
+
+	try {
+		if (networkThread) {
+			networkThread->Stop();
+			delete networkThread;
+		}
+		if (signalingThread) {
+			signalingThread->Stop();
+			delete signalingThread;
+		}
+		if (workerThread) {
+			workerThread->Stop();
+			delete workerThread;
+		}
+	}
+	catch (...) {
+		ThrowCxxJavaException(env);
+	}
 }
 
 JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_createPeerConnection
