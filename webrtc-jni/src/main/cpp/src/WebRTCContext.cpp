@@ -46,9 +46,7 @@ namespace jni
 		}
 		
 		JavaEnums::add<webrtc::LoggingSeverity>(env, PKG_LOG"Logging$Severity");
-		JavaEnums::add<webrtc::MediaType>(env, PKG_MEDIA"MediaType");
 		JavaEnums::add<webrtc::DataChannelInterface::DataState>(env, PKG"RTCDataChannelState");
-		JavaEnums::add<webrtc::DesktopCapturer::Result>(env, PKG_DESKTOP"DesktopCapturer$Result");
 		JavaEnums::add<webrtc::DtlsTransportState>(env, PKG"RTCDtlsTransportState");
 		JavaEnums::add<webrtc::DtxStatus>(env, PKG"RTCDtxStatus");
 		JavaEnums::add<webrtc::PeerConnectionInterface::BundlePolicy>(env, PKG"RTCBundlePolicy");
