@@ -15,18 +15,12 @@
  */
 
 #include "JNI_PeerConnectionFactory.h"
-#include "api/AudioOptions.h"
-#include "api/CreateSessionDescriptionObserver.h"
 #include "api/PeerConnectionObserver.h"
 #include "api/RTCConfiguration.h"
-#include "api/RTCRtpCapabilities.h"
-#include "JavaEnums.h"
 #include "JavaError.h"
 #include "JavaFactories.h"
 #include "JavaNullPointerException.h"
 #include "JavaRuntimeException.h"
-#include "JavaRef.h"
-#include "JavaString.h"
 #include "JavaUtils.h"
 
 #include "api/create_peerconnection_factory.h"
