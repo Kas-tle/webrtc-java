@@ -28,10 +28,6 @@
 JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_initialize
 (JNIEnv * env, jobject caller)
 {
-	webrtc::AudioDeviceModule * audioDevModule = (audioModule != nullptr)
-		? GetHandle<webrtc::AudioDeviceModule>(env, audioModule)
-		: nullptr;
-
 	try {
         auto networkThread = webrtc::Thread::CreateWithSocketServer();
         networkThread->SetName("webrtc_jni_network_thread", nullptr);
