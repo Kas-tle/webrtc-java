@@ -24,6 +24,7 @@
 #include "JavaUtils.h"
 
 #include "api/create_peerconnection_factory.h"
+#include "api/task_queue/default_task_queue_factory.h"
 #include "modules/audio_device/include/audio_device.h"
 
 JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_initialize
@@ -50,9 +51,12 @@ JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_initialize
         }
 
         auto task_queue_factory = webrtc::CreateDefaultTaskQueueFactory();
+        auto task_queue_factory_ptr = task_queue_factory.release();
+
         auto adm = webrtc::AudioDeviceModule::Create(
-            webrtc::AudioDeviceModule::kDummyAudio, 
-            task_queue_factory.get());
+            webrtc::AudioDeviceModule::kDummyAudio,
+            task_queue_factory_ptr
+        );
 
         auto factory = webrtc::CreatePeerConnectionFactory(
             networkThread.get(),
