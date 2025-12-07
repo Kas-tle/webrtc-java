@@ -8,7 +8,6 @@ module webrtc.java.examples {
     requires webrtc.java;
 
     exports dev.onvoid.webrtc.examples.web.client;
-    exports dev.onvoid.webrtc.examples.web.server;
     exports dev.onvoid.webrtc.examples.web.model;
 
 }

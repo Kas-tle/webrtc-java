@@ -165,7 +165,7 @@ if(APPLE)
             ${TARGET_INC_DIR}/sdk/objc/base
     )
     target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_MAC WEBRTC_POSIX)
-    target_link_libraries(${PROJECT_NAME} "-framework Foundation" "-framework IOKit")
+    target_link_libraries(${PROJECT_NAME} "-framework Foundation" "-framework AVFoundation" "-framework CoreGraphics" "-framework CoreAudio" "-framework CoreVideo" "-framework ScreenCaptureKit" "-framework AudioToolbox" "-framework IOSurface" "-framework ApplicationServices" "-framework AppKit")
 elseif(LINUX)
     target_include_directories(${PROJECT_NAME} PUBLIC ${DBUS_INCLUDE_DIRS})
     target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_LINUX WEBRTC_POSIX)
