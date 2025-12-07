@@ -24,6 +24,14 @@ extern "C" {
 	JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_dispose
 	(JNIEnv *, jobject);
 
+    /*
+    * Class:     dev_onvoid_webrtc_PeerConnectionFactory
+    * Method:    initialize
+    * Signature: ()V
+    */
+    JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_initialize
+    (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif
