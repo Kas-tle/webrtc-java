@@ -47,12 +47,12 @@ public class PeerConnectionFactory extends DisposableNativeObject {
 	private long workerThreadHandle;
 
 
-	/**
-	 * Creates an instance of PeerConnectionFactory.
-	 */
-	public PeerConnectionFactory() {
-		this(null, null);
-	}
+    /**
+     * Creates an instance of PeerConnectionFactory.
+     */
+    public PeerConnectionFactory() {
+        initialize();
+    }
 
 	/**
 	 * Creates a new {@link RTCPeerConnection}.
@@ -68,5 +68,10 @@ public class PeerConnectionFactory extends DisposableNativeObject {
 
 	@Override
 	public native void dispose();
+
+    /**
+     * Initializes the native PeerConnectionFactory.
+     */
+    private native void initialize();
 
 }

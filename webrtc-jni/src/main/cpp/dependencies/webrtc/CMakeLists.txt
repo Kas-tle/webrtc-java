@@ -171,7 +171,7 @@ elseif(LINUX)
     target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_LINUX WEBRTC_POSIX)
 elseif(WIN32)
     target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_WIN NOMINMAX WIN32_LEAN_AND_MEAN NDEBUG)
-    target_link_libraries(${PROJECT_NAME} user32 iphlpapi secur32 ws2_32)
+    target_link_libraries(${PROJECT_NAME} user32 iphlpapi secur32 ws2_32 winmm dmoguids wmcodecdspuuid msdmo strmiids)
 endif()
 
 if(EXISTS "${WEBRTC_LIB_PATH}" OR EXISTS "${WEBRTC_LIB_PATH_INSTALLED}")
@@ -286,7 +286,7 @@ execute_command(
 message(STATUS "WebRTC: compile")
 if(APPLE)
     execute_command(
-        COMMAND ninja -C "${WEBRTC_BUILD}" :default api/audio_codecs:builtin_audio_decoder_factory api/task_queue:default_task_queue_factory sdk:native_api sdk:default_codec_factory_objc pc:peer_connection sdk:videocapture_objc
+        COMMAND ninja -C "${WEBRTC_BUILD}" :default api/task_queue:default_task_queue_factory sdk:native_api pc:peer_connection
         WORKING_DIRECTORY "${WEBRTC_SRC}"
     )
 
