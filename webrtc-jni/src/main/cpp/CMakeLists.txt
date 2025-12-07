@@ -50,29 +50,11 @@ add_subdirectory(dependencies/jni-voithos)
 
 file(GLOB SOURCES_ROOT "src/*.cpp")
 file(GLOB SOURCES_API "src/api/*.cpp")
-file(GLOB SOURCES_API_AUDIO "src/api/audio/*.cpp")
-file(GLOB SOURCES_MEDIA "src/media/*.cpp")
-file(GLOB SOURCES_MEDIA_AUDIO "src/media/audio/*.cpp")
-file(GLOB SOURCES_MEDIA_AUDIO_OS "src/media/audio/${SOURCE_TARGET}/*.cpp")
-file(GLOB SOURCES_MEDIA_VIDEO "src/media/video/*.cpp")
-file(GLOB SOURCES_MEDIA_VIDEO_DESKTOP "src/media/video/desktop/*.cpp")
-file(GLOB SOURCES_MEDIA_VIDEO_DESKTOP_OS "src/media/video/desktop/${SOURCE_TARGET}/*.cpp")
-file(GLOB SOURCES_MEDIA_VIDEO_OS "src/media/video/${SOURCE_TARGET}/*.cpp")
-file(GLOB SOURCES_PLATFORM "src/platform/${SOURCE_TARGET}/*.cpp")
 file(GLOB SOURCES_RTC "src/rtc/*.cpp")
 
 list(APPEND SOURCES
     ${SOURCES_ROOT}
     ${SOURCES_API}
-    ${SOURCES_API_AUDIO}
-    ${SOURCES_MEDIA}
-    ${SOURCES_MEDIA_AUDIO}
-    ${SOURCES_MEDIA_AUDIO_OS}
-    ${SOURCES_MEDIA_VIDEO}
-    ${SOURCES_MEDIA_VIDEO_DESKTOP}
-    ${SOURCES_MEDIA_VIDEO_DESKTOP_OS}
-    ${SOURCES_MEDIA_VIDEO_OS}
-    ${SOURCES_PLATFORM}
     ${SOURCES_RTC}
 )
 
@@ -85,7 +67,6 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE
         include
         include/api
-        include/media
         include/rtc
 )
 
@@ -102,7 +83,7 @@ target_link_libraries(${PROJECT_NAME} webrtc)
 if(APPLE)
     set_source_files_properties(${SOURCES} PROPERTIES COMPILE_FLAGS "-x objective-c++")
     target_link_options(${PROJECT_NAME} PRIVATE "-ObjC")
-    target_link_libraries(${PROJECT_NAME} "-framework Foundation" "-framework AVFoundation" "-framework CoreMedia" "-framework CoreAudio" "-framework IOKit" "-framework CoreVideo" "-framework VideoToolbox" "-framework QuartzCore")
+    target_link_libraries(${PROJECT_NAME} "-framework Foundation" "-framework IOKit")
 elseif(LINUX)
     if(NOT TARGET_CPU MATCHES "^arm")
         set(CXX_LIBS "-static-libgcc -stdlib=libc++ -lc++ -lc++abi")
@@ -110,10 +91,9 @@ elseif(LINUX)
         set(CXX_LIBS "-static-libgcc")
     endif()
 
-    target_link_libraries(${PROJECT_NAME} ${CXX_LIBS} udev)
-    target_link_libraries(${PROJECT_NAME} dl)
+    target_link_libraries(${PROJECT_NAME} ${CXX_LIBS})
 elseif(WIN32)
-    target_link_libraries(${PROJECT_NAME} dwmapi.lib mf.lib mfreadwrite.lib mfplat.lib mfuuid.lib shcore.lib)
+    target_link_libraries(${PROJECT_NAME} shcore.lib)
 endif()
 
 install(TARGETS ${PROJECT_NAME}

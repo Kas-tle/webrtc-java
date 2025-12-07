@@ -7,53 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	/*
-	 * Class:     dev_onvoid_webrtc_RTCPeerConnection
-	 * Method:    getSenders
-	 * Signature: ()[Ldev/onvoid/webrtc/RTCRtpSender;
-	 */
-	JNIEXPORT jobjectArray JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_getSenders
-	(JNIEnv *, jobject);
-
-	/*
-	 * Class:     dev_onvoid_webrtc_RTCPeerConnection
-	 * Method:    getReceivers
-	 * Signature: ()[Ldev/onvoid/webrtc/RTCRtpReceiver;
-	 */
-	JNIEXPORT jobjectArray JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_getReceivers
-	(JNIEnv *, jobject);
-
-	/*
-	 * Class:     dev_onvoid_webrtc_RTCPeerConnection
-	 * Method:    getTransceivers
-	 * Signature: ()[Ldev/onvoid/webrtc/RTCRtpTransceiver;
-	 */
-	JNIEXPORT jobjectArray JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_getTransceivers
-	(JNIEnv *, jobject);
-
-	/*
-	 * Class:     dev_onvoid_webrtc_RTCPeerConnection
-	 * Method:    addTrack
-	 * Signature: (Ldev/onvoid/webrtc/media/MediaStreamTrack;Ljava/util/List;)Ldev/onvoid/webrtc/RTCRtpSender;
-	 */
-	JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_addTrack
-	(JNIEnv *, jobject, jobject, jobject);
-
-	/*
-	 * Class:     dev_onvoid_webrtc_RTCPeerConnection
-	 * Method:    removeTrack
-	 * Signature: (Ldev/onvoid/webrtc/RTCRtpSender;)V
-	 */
-	JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_removeTrack
-	(JNIEnv *, jobject, jobject);
-
-	/*
-	 * Class:     dev_onvoid_webrtc_RTCPeerConnection
-	 * Method:    addTransceiver
-	 * Signature: (Ldev/onvoid/webrtc/media/MediaStreamTrack;Ldev/onvoid/webrtc/RTCRtpTransceiverInit;)Ldev/onvoid/webrtc/RTCRtpTransceiver;
-	 */
-	JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_addTransceiver
-	(JNIEnv *, jobject, jobject, jobject);
 
 	/*
 	 * Class:     dev_onvoid_webrtc_RTCPeerConnection
@@ -214,22 +167,6 @@ extern "C" {
 	 */
 	JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_getStats__Ldev_onvoid_webrtc_RTCStatsCollectorCallback_2
 	(JNIEnv *, jobject, jobject);
-
-	/*
-	 * Class:     dev_onvoid_webrtc_RTCPeerConnection
-	 * Method:    getStats
-	 * Signature: (Ldev/onvoid/webrtc/RTCRtpReceiver;Ldev/onvoid/webrtc/RTCStatsCollectorCallback;)V
-	 */
-	JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_getStats__Ldev_onvoid_webrtc_RTCRtpReceiver_2Ldev_onvoid_webrtc_RTCStatsCollectorCallback_2
-	(JNIEnv *, jobject, jobject, jobject);
-
-	/*
-	 * Class:     dev_onvoid_webrtc_RTCPeerConnection
-	 * Method:    getStats
-	 * Signature: (Ldev/onvoid/webrtc/RTCRtpSender;Ldev/onvoid/webrtc/RTCStatsCollectorCallback;)V
-	 */
-	JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_getStats__Ldev_onvoid_webrtc_RTCRtpSender_2Ldev_onvoid_webrtc_RTCStatsCollectorCallback_2
-	(JNIEnv *, jobject, jobject, jobject);
 
 	/*
 	 * Class:     dev_onvoid_webrtc_RTCPeerConnection

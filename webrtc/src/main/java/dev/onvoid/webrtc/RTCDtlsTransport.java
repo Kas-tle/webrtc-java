@@ -28,9 +28,7 @@ import dev.onvoid.webrtc.internal.NativeObject;
  * constructed as a result of calls to {@link RTCPeerConnection#setLocalDescription
  * setLocalDescription} and {@link RTCPeerConnection#setRemoteDescription
  * setRemoteDescription}. Each RTCDtlsTransport object represents the DTLS
- * transport layer for the RTP or RTCP component of a specific {@link
- * RTCRtpTransceiver}, or a group of RTCRtpTransceivers if such a group has been
- * negotiated via [BUNDLE].
+ * transport layer for the RTP.
  *
  * @author Alex Andres
  */

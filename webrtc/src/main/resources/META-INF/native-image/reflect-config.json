@@ -45,48 +45,6 @@
 	"name": "dev.onvoid.webrtc.RTCRtcpParameters"
   },
   {
-	"name": "dev.onvoid.webrtc.RTCRtpCapabilities"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpCodecCapability"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpCodecParameters"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpContributingSource"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpEncodingParameters"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpHeaderExtensionCapability"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpHeaderExtensionParameters"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpParameters"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpReceiver"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpSender"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpSendParameters"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpSynchronizationSource"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpTransceiver"
-  },
-  {
-	"name": "dev.onvoid.webrtc.RTCRtpTransceiverDirection"
-  },
-  {
 	"name": "dev.onvoid.webrtc.RTCSdpType"
   },
   {
@@ -112,59 +70,5 @@
   },
   {
 	"name": "dev.onvoid.webrtc.logging.LogSink"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.audio.AudioDevice"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.audio.AudioOptions"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.audio.AudioProcessing"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.audio.AudioProcessingConfig"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.audio.AudioProcessingStats"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.audio.AudioProcessingStreamConfig"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.audio.AudioSink"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.audio.AudioSource"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.audio.AudioTrack"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.audio.AudioTrackSink"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.audio.AudioTrackSource"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.video.VideoCapture"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.video.VideoCaptureCapability"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.video.VideoDesktopSource"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.video.VideoDevice"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.video.desktop.DesktopCaptureCallback"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.video.desktop.DesktopFrame"
-  },
-  {
-	"name": "dev.onvoid.webrtc.media.video.desktop.DesktopSource"
   }
 ]

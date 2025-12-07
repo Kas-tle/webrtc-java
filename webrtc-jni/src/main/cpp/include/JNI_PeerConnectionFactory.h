@@ -7,29 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	/*
-	 * Class:     dev_onvoid_webrtc_PeerConnectionFactory
-	 * Method:    createAudioSource
-	 * Signature: (Ldev/onvoid/webrtc/media/audio/AudioOptions;)Ldev/onvoid/webrtc/media/audio/AudioTrackSource;
-	 */
-	JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_createAudioSource
-	(JNIEnv *, jobject, jobject);
-
-	/*
-	 * Class:     dev_onvoid_webrtc_PeerConnectionFactory
-	 * Method:    createAudioTrack
-	 * Signature: (Ljava/lang/String;Ldev/onvoid/webrtc/media/audio/AudioTrackSource;)Ldev/onvoid/webrtc/media/audio/AudioTrack;
-	 */
-	JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_createAudioTrack
-	(JNIEnv *, jobject, jstring, jobject);
-
-	/*
-	 * Class:     dev_onvoid_webrtc_PeerConnectionFactory
-	 * Method:    createVideoTrack
-	 * Signature: (Ljava/lang/String;Ldev/onvoid/webrtc/media/video/VideoTrackSource;)Ldev/onvoid/webrtc/media/video/VideoTrack;
-	 */
-	JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_createVideoTrack
-	(JNIEnv *, jobject, jstring, jobject);
 
 	/*
 	 * Class:     dev_onvoid_webrtc_PeerConnectionFactory
@@ -38,22 +15,6 @@ extern "C" {
 	 */
 	JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_createPeerConnection
 	(JNIEnv *, jobject, jobject, jobject);
-
-	/*
-	 * Class:     dev_onvoid_webrtc_PeerConnectionFactory
-	 * Method:    getRtpReceiverCapabilities
-	 * Signature: (Ldev/onvoid/webrtc/media/MediaType;)Ldev/onvoid/webrtc/RTCRtpCapabilities;
-	 */
-	JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_getRtpReceiverCapabilities
-	(JNIEnv *, jobject, jobject);
-
-	/*
-	 * Class:     dev_onvoid_webrtc_PeerConnectionFactory
-	 * Method:    getRtpSenderCapabilities
-	 * Signature: (Ldev/onvoid/webrtc/media/MediaType;)Ldev/onvoid/webrtc/RTCRtpCapabilities;
-	 */
-	JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_PeerConnectionFactory_getRtpSenderCapabilities
-	(JNIEnv *, jobject, jobject);
 
 	/*
 	 * Class:     dev_onvoid_webrtc_PeerConnectionFactory

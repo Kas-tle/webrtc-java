@@ -18,33 +18,9 @@ package dev.onvoid.webrtc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import dev.onvoid.webrtc.media.MediaSource;
-import dev.onvoid.webrtc.media.MediaStreamTrackState;
-import dev.onvoid.webrtc.media.MediaType;
-import dev.onvoid.webrtc.media.audio.*;
-import dev.onvoid.webrtc.media.video.VideoDeviceSource;
-import dev.onvoid.webrtc.media.video.VideoTrack;
-
 import org.junit.jupiter.api.Test;
 
 class PeerConnectionFactoryTests extends TestBase {
-
-	@Test
-	void createWithAudioDeviceModule() {
-		AudioDeviceModule audioDevModule = new AudioDeviceModule(AudioLayer.kDummyAudio);
-
-		PeerConnectionFactory factory = new PeerConnectionFactory(audioDevModule);
-		factory.dispose();
-	}
-
-	@Test
-	void createWithAudioProcessing() {
-		AudioDeviceModule audioDevModule = new AudioDeviceModule(AudioLayer.kDummyAudio);
-		AudioProcessing audioProcessing = new AudioProcessing();
-
-		PeerConnectionFactory factory = new PeerConnectionFactory(audioDevModule, audioProcessing);
-		factory.dispose();
-	}
 
 	@Test
 	void createPeerConnectionNullParams() {
@@ -67,114 +43,5 @@ class PeerConnectionFactoryTests extends TestBase {
 		assertNotNull(peerConnection);
 
 		peerConnection.close();
-	}
-
-	@Test
-	void createAudioSourceNullOptions() {
-		assertThrows(NullPointerException.class, () -> {
-			factory.createAudioSource(null);
-		});
-	}
-
-	@Test
-	void createAudioSource() {
-		AudioOptions audioOptions = new AudioOptions();
-		AudioTrackSource audioSource = factory.createAudioSource(audioOptions);
-
-		assertNotNull(audioSource);
-		assertEquals(MediaSource.State.LIVE, audioSource.getState());
-	}
-
-	@Test
-	void createAudioTrackNullParams() {
-		assertThrows(NullPointerException.class, () -> {
-			factory.createAudioTrack(null, null);
-		});
-
-		assertThrows(NullPointerException.class, () -> {
-			factory.createAudioTrack("audioTrack", null);
-		});
-	}
-
-	@Test
-	void createAudioTrack() {
-		AudioOptions audioOptions = new AudioOptions();
-		AudioTrackSource audioSource = factory.createAudioSource(audioOptions);
-		AudioTrack audioTrack = factory.createAudioTrack("audioTrack", audioSource);
-
-		assertNotNull(audioTrack);
-		assertEquals("audio", audioTrack.getKind());
-		assertEquals("audioTrack", audioTrack.getId());
-		assertEquals(MediaStreamTrackState.LIVE, audioTrack.getState());
-		assertTrue(audioTrack.isEnabled());
-	}
-
-	@Test
-	void createVideoTrackNullParams() {
-		assertThrows(NullPointerException.class, () -> {
-			factory.createVideoTrack(null, null);
-		});
-
-		assertThrows(NullPointerException.class, () -> {
-			factory.createVideoTrack("videoTrack", null);
-		});
-	}
-
-	@Test
-	void createVideoTrack() {
-		VideoDeviceSource videoSource = new VideoDeviceSource();
-		VideoTrack videoTrack = factory.createVideoTrack("videoTrack", videoSource);
-
-		assertNotNull(videoTrack);
-		assertEquals("video", videoTrack.getKind());
-		assertEquals("videoTrack", videoTrack.getId());
-		assertEquals(MediaStreamTrackState.LIVE, videoTrack.getState());
-		assertTrue(videoTrack.isEnabled());
-	}
-
-	@Test
-	void getReceiverCapabilities() {
-		RTCRtpCapabilities audioCapabilities = factory
-				.getRtpReceiverCapabilities(MediaType.AUDIO);
-		RTCRtpCapabilities videoCapabilities = factory
-				.getRtpReceiverCapabilities(MediaType.VIDEO);
-
-		assertNotNull(audioCapabilities);
-		assertNotNull(videoCapabilities);
-
-		assertNotNull(audioCapabilities.getCodecs());
-		assertNotNull(audioCapabilities.getHeaderExtensions());
-
-		assertFalse(audioCapabilities.getCodecs().isEmpty());
-		assertFalse(audioCapabilities.getHeaderExtensions().isEmpty());
-
-		assertNotNull(videoCapabilities.getCodecs());
-		assertNotNull(videoCapabilities.getHeaderExtensions());
-
-		assertFalse(videoCapabilities.getCodecs().isEmpty());
-		assertFalse(videoCapabilities.getHeaderExtensions().isEmpty());
-	}
-
-	@Test
-	void getSenderCapabilities() {
-		RTCRtpCapabilities audioCapabilities = factory
-				.getRtpSenderCapabilities(MediaType.AUDIO);
-		RTCRtpCapabilities videoCapabilities = factory
-				.getRtpSenderCapabilities(MediaType.VIDEO);
-
-		assertNotNull(audioCapabilities);
-		assertNotNull(videoCapabilities);
-
-		assertNotNull(audioCapabilities.getCodecs());
-		assertNotNull(audioCapabilities.getHeaderExtensions());
-
-		assertFalse(audioCapabilities.getCodecs().isEmpty());
-		assertFalse(audioCapabilities.getHeaderExtensions().isEmpty());
-
-		assertNotNull(videoCapabilities.getCodecs());
-		assertNotNull(videoCapabilities.getHeaderExtensions());
-
-		assertFalse(videoCapabilities.getCodecs().isEmpty());
-		assertFalse(videoCapabilities.getHeaderExtensions().isEmpty());
 	}
 }

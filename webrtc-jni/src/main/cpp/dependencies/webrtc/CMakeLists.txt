@@ -164,19 +164,14 @@ if(APPLE)
             ${TARGET_INC_DIR}/sdk/objc
             ${TARGET_INC_DIR}/sdk/objc/base
     )
-    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_MAC WEBRTC_POSIX WEBRTC_USE_H264)
-    target_link_libraries(${PROJECT_NAME} "-framework Foundation" "-framework AVFoundation" "-framework CoreGraphics" "-framework CoreAudio" "-framework CoreVideo" "-framework ScreenCaptureKit" "-framework AudioToolbox" "-framework IOSurface" "-framework ApplicationServices" "-framework AppKit")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_MAC WEBRTC_POSIX)
+    target_link_libraries(${PROJECT_NAME} "-framework Foundation" "-framework IOKit")
 elseif(LINUX)
-    # Find DBus
-    find_package(PkgConfig QUIET REQUIRED) # Include functions provided by PkgConfig module.
-    pkg_check_modules(DBUS REQUIRED dbus-1)
-
     target_include_directories(${PROJECT_NAME} PUBLIC ${DBUS_INCLUDE_DIRS})
-    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_LINUX WEBRTC_POSIX WEBRTC_USE_H264)
-    target_link_libraries(${PROJECT_NAME} X11 Xfixes Xrandr Xcomposite dbus-1)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_LINUX WEBRTC_POSIX)
 elseif(WIN32)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_WIN WEBRTC_USE_H264 NOMINMAX WIN32_LEAN_AND_MEAN NDEBUG)
-    target_link_libraries(${PROJECT_NAME} D3D11 DXGI user32 gdi32 iphlpapi dmoguids msdmo secur32 strmiids winmm wmcodecdspuuid ws2_32)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_WIN NOMINMAX WIN32_LEAN_AND_MEAN NDEBUG)
+    target_link_libraries(${PROJECT_NAME} user32 iphlpapi secur32 ws2_32)
 endif()
 
 if(EXISTS "${WEBRTC_LIB_PATH}" OR EXISTS "${WEBRTC_LIB_PATH_INSTALLED}")
@@ -265,9 +260,13 @@ rtc_enable_protobuf=false \
 rtc_build_examples=false \
 rtc_include_tests=false \
 use_rtti=true \
-rtc_use_h264=true \
+rtc_use_h264=false \
 ffmpeg_branding=\"Chrome\" \
-symbol_level=0")
+symbol_level=0 \
+rtc_use_x11=false \
+use_dbus=false \
+use_udev=false \
+rtc_use_pulseaudio=false")
 
 if(APPLE)
     set(COMPILE_ARGS "${COMPILE_ARGS} mac_deployment_target=\"${CMAKE_OSX_DEPLOYMENT_TARGET}\"")

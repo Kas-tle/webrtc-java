@@ -39,9 +39,6 @@
 					<argLine>
 						--add-opens webrtc.java/dev.onvoid.webrtc=ALL-UNNAMED
 						--add-opens webrtc.java/dev.onvoid.webrtc.logging=ALL-UNNAMED
-						--add-opens webrtc.java/dev.onvoid.webrtc.media=ALL-UNNAMED
-						--add-opens webrtc.java/dev.onvoid.webrtc.media.audio=ALL-UNNAMED
-						--add-opens webrtc.java/dev.onvoid.webrtc.media.video=ALL-UNNAMED
 					</argLine>
 				</configuration>
 			</plugin>

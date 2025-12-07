@@ -32,23 +32,12 @@ import dev.onvoid.webrtc.RTCIceServer;
 import dev.onvoid.webrtc.RTCOfferOptions;
 import dev.onvoid.webrtc.RTCPeerConnection;
 import dev.onvoid.webrtc.RTCPeerConnectionState;
-import dev.onvoid.webrtc.RTCRtpReceiver;
-import dev.onvoid.webrtc.RTCRtpTransceiver;
 import dev.onvoid.webrtc.RTCSdpType;
 import dev.onvoid.webrtc.RTCSessionDescription;
 import dev.onvoid.webrtc.RTCSignalingState;
 import dev.onvoid.webrtc.SetSessionDescriptionObserver;
 import dev.onvoid.webrtc.examples.web.model.IceCandidateMessage;
 import dev.onvoid.webrtc.examples.web.model.SessionDescriptionMessage;
-import dev.onvoid.webrtc.media.MediaStream;
-import dev.onvoid.webrtc.media.MediaStreamTrack;
-
-import dev.onvoid.webrtc.media.audio.AudioOptions;
-import dev.onvoid.webrtc.media.audio.AudioTrack;
-import dev.onvoid.webrtc.media.audio.AudioTrackSource;
-import dev.onvoid.webrtc.media.audio.CustomAudioSource;
-import dev.onvoid.webrtc.media.video.VideoTrack;
-import dev.onvoid.webrtc.media.video.VideoTrackSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +58,6 @@ public class PeerConnectionManager implements PeerConnectionSignalingHandler {
 
     private Consumer<RTCSessionDescription> onLocalDescriptionCreated;
     private Consumer<RTCIceCandidate> onIceCandidateGenerated;
-    private Consumer<MediaStreamTrack> onTrackReceived;
 
     private boolean isInitiator = false;
 
@@ -90,56 +78,6 @@ public class PeerConnectionManager implements PeerConnectionSignalingHandler {
         peerConnection = factory.createPeerConnection(config, new PeerConnectionObserverImpl());
 
         LOG.info("PeerConnectionManager created");
-    }
-
-    /**
-     * Adds a media track to the peer connection.
-     *
-     * @param track The media track to add.
-     * @param streamIds The stream IDs to associate with the track.
-     */
-    public void addTrack(MediaStreamTrack track, List<String> streamIds) {
-        peerConnection.addTrack(track, streamIds);
-
-        LOG.info("Added track: {}", track.getKind());
-    }
-
-    /**
-     * Creates an audio track with the specified options and label.
-     *
-     * @param options Configuration options for the audio track source.
-     * @param label   A unique identifier for the audio track.
-     *
-     * @return A new AudioTrack instance configured with the provided options.
-     */
-    public AudioTrack createAudioTrack(AudioOptions options, String label) {
-        AudioTrackSource audioSource = factory.createAudioSource(options);
-
-        return factory.createAudioTrack(label, audioSource);
-    }
-
-    /**
-     * Creates an audio track with a custom audio source that can push audio frames.
-     *
-     * @param source The custom audio source providing the audio frames.
-     * @param label  A unique identifier for the audio track.
-     *
-     * @return A new AudioTrack instance connected to the provided custom source.
-     */
-    public AudioTrack createAudioTrack(CustomAudioSource source, String label) {
-        return factory.createAudioTrack(label, source);
-    }
-
-    /**
-     * Creates a video track with the specified source and label.
-     *
-     * @param source The video track source providing the video frames.
-     * @param label  A unique identifier for the video track.
-     *
-     * @return A new VideoTrack instance connected to the provided source.
-     */
-    public VideoTrack createVideoTrack(VideoTrackSource source, String label) {
-        return factory.createVideoTrack(label, source);
     }
 
     /**
@@ -268,15 +206,6 @@ public class PeerConnectionManager implements PeerConnectionSignalingHandler {
     public void setOnIceCandidateGenerated(Consumer<RTCIceCandidate> callback) {
         this.onIceCandidateGenerated = callback;
     }
-
-    /**
-     * Sets a callback to be invoked when a media track is received.
-     *
-     * @param callback The callback to invoke.
-     */
-    public void setOnTrackReceived(Consumer<MediaStreamTrack> callback) {
-        this.onTrackReceived = callback;
-    }
     
     /**
      * Sets whether this peer is the initiator of the connection.
@@ -402,28 +331,6 @@ public class PeerConnectionManager implements PeerConnectionSignalingHandler {
         public void onRenegotiationNeeded() {
             LOG.info("Renegotiation needed");
             createOffer();
-        }
-        
-        @Override
-        public void onAddTrack(RTCRtpReceiver receiver, MediaStream[] mediaStreams) {
-            LOG.info("Track added: {}", receiver.getTrack().getKind());
-        }
-        
-        @Override
-        public void onRemoveTrack(RTCRtpReceiver receiver) {
-            LOG.info("Track removed: {}", receiver.getTrack().getKind());
-        }
-        
-        @Override
-        public void onTrack(RTCRtpTransceiver transceiver) {
-            MediaStreamTrack track = transceiver.getReceiver().getTrack();
-            String kind = track.getKind();
-            
-            LOG.info("{} track added to transceiver", kind);
-            
-            if (onTrackReceived != null) {
-                onTrackReceived.accept(track);
-            }
         }
     }
 }

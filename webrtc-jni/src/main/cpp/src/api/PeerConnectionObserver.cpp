@@ -57,48 +57,6 @@ namespace jni
 		ExceptionCheck(env);
 	}
 
-	void PeerConnectionObserver::OnTrack(webrtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver)
-	{
-		JNIEnv * env = AttachCurrentThread();
-
-		auto jTransceiver = JavaFactories::create(env, transceiver.get());
-
-		env->CallVoidMethod(observer, javaClass->onTrack, jTransceiver.get());
-
-		ExceptionCheck(env);
-	}
-
-	void PeerConnectionObserver::OnAddTrack(webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver, const std::vector<webrtc::scoped_refptr<webrtc::MediaStreamInterface>> & streams)
-	{
-		JNIEnv * env = AttachCurrentThread();
-
-		JavaLocalRef<jobjectArray> streamArray;
-
-		try {
-			streamArray = createObjectArray(env, streams);
-
-			auto jReceiver = JavaFactories::create(env, receiver.get());
-
-			env->CallVoidMethod(observer, javaClass->onAddTrack, jReceiver.get(), streamArray.get());
-		}
-		catch (...) {
-			ThrowCxxJavaException(env);
-		}
-
-		ExceptionCheck(env);
-	}
-
-	void PeerConnectionObserver::OnRemoveTrack(webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver)
-	{
-		JNIEnv * env = AttachCurrentThread();
-
-		auto jReceiver = JavaFactories::create(env, receiver.get());
-
-		env->CallVoidMethod(observer, javaClass->onRemoveTrack, jReceiver.get());
-
-		ExceptionCheck(env);
-	}
-
 	void PeerConnectionObserver::OnDataChannel(webrtc::scoped_refptr<webrtc::DataChannelInterface> channel)
 	{
 		JNIEnv * env = AttachCurrentThread();
@@ -199,9 +157,6 @@ namespace jni
 
 		onConnectionChange = GetMethod(env, cls, "onConnectionChange", "(L" PKG "RTCPeerConnectionState;)V");
 		onSignalingChange = GetMethod(env, cls, "onSignalingChange", "(L" PKG "RTCSignalingState;)V");
-		onTrack = GetMethod(env, cls, "onTrack", "(L" PKG "RTCRtpTransceiver;)V");
-		onAddTrack = GetMethod(env, cls, "onAddTrack", "(L" PKG "RTCRtpReceiver;[L" PKG_MEDIA "MediaStream;)V");
-		onRemoveTrack = GetMethod(env, cls, "onRemoveTrack", "(L" PKG "RTCRtpReceiver;)V");
 		onDataChannel = GetMethod(env, cls, "onDataChannel", "(L" PKG "RTCDataChannel;)V");
 		onRenegotiationNeeded = GetMethod(env, cls, "onRenegotiationNeeded", "()V");
 		onIceConnectionChange = GetMethod(env, cls, "onIceConnectionChange", "(L" PKG "RTCIceConnectionState;)V");

@@ -19,45 +19,24 @@
 
 #include "JavaContext.h"
 #include "api/environment/environment.h"
-#include "media/audio/AudioDeviceManager.h"
-#include "media/video/VideoDeviceManager.h"
-#include "media/video/desktop/PowerManagement.h"
 
 #include <jni.h>
 #include <memory>
-#include <mutex>
 
 namespace jni
 {
-	class WebRTCContext : public JavaContext
-	{
-		public:
-			WebRTCContext(JavaVM * vm);
-			~WebRTCContext() = default;
+    class WebRTCContext : public JavaContext
+    {
+        public:
+            WebRTCContext(JavaVM * vm);
+            ~WebRTCContext() = default;
 
-			void initialize(JNIEnv * env) override;
-			void initializeClassLoader(JNIEnv* env, const char * loaderName) override;
-			void destroy(JNIEnv * env) override;
+            void initialize(JNIEnv * env) override;
+            void initializeClassLoader(JNIEnv* env, const char * loaderName) override;
+            void destroy(JNIEnv * env) override;
 
-			avdev::AudioDeviceManager * getAudioDeviceManager();
-			avdev::VideoDeviceManager * getVideoDeviceManager();
-			avdev::PowerManagement * getPowerManagement();
-
-			const webrtc::Environment webrtcEnv;
-
-		private:
-			void initializeAudioManager();
-			void initializeVideoManager();
-			void initializePowerManagement();
-
-		private:
-			std::mutex aMutex;
-			std::mutex vMutex;
-			std::unique_ptr<avdev::AudioDeviceManager> audioDevManager;
-			std::unique_ptr<avdev::VideoDeviceManager> videoDevManager;
-			std::unique_ptr<avdev::PowerManagement> powerManagement;
-	};
+            const webrtc::Environment webrtcEnv;
+    };
 }
 
 #endif
- 

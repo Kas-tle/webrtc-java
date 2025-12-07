@@ -22,8 +22,6 @@ import java.util.concurrent.CountDownLatch;
 
 import dev.onvoid.webrtc.PeerConnectionFactory;
 import dev.onvoid.webrtc.logging.Logging.Severity;
-import dev.onvoid.webrtc.media.audio.AudioDeviceModule;
-import dev.onvoid.webrtc.media.audio.AudioLayer;
 
 import org.junit.jupiter.api.Test;
 
@@ -42,12 +40,10 @@ class LoggingTests {
 
 		Logging.addLogSink(Logging.Severity.INFO, sink);
 
-		AudioDeviceModule audioDevModule = new AudioDeviceModule(AudioLayer.kDummyAudio);
-		PeerConnectionFactory factory = new PeerConnectionFactory(audioDevModule);
+		PeerConnectionFactory factory = new PeerConnectionFactory();
 
 		latch.await();
 
-		audioDevModule.dispose();
 		factory.dispose();
 	}
 
