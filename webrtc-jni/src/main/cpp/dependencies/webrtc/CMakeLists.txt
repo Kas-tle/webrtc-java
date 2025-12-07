@@ -266,7 +266,12 @@ symbol_level=0 \
 rtc_use_x11=false \
 use_dbus=false \
 use_udev=false \
-rtc_use_pulseaudio=false")
+rtc_use_pulseaudio=false \
+rtc_include_builtin_audio_codecs=false \
+rtc_include_opus=false \
+rtc_build_libvpx=false \
+rtc_disable_metrics=true \
+rtc_desktop_capture_supported=false")
 
 if(APPLE)
     set(COMPILE_ARGS "${COMPILE_ARGS} mac_deployment_target=\"${CMAKE_OSX_DEPLOYMENT_TARGET}\"")
