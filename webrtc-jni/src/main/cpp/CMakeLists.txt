@@ -83,7 +83,7 @@ target_link_libraries(${PROJECT_NAME} webrtc)
 if(APPLE)
     set_source_files_properties(${SOURCES} PROPERTIES COMPILE_FLAGS "-x objective-c++")
     target_link_options(${PROJECT_NAME} PRIVATE "-ObjC")
-    target_link_libraries(${PROJECT_NAME} "-framework Foundation" "-framework AVFoundation" "-framework CoreMedia" "-framework CoreAudio" "-framework IOKit" "-framework CoreVideo" "-framework VideoToolbox" "-framework QuartzCore")
+    target_link_libraries(${PROJECT_NAME} "-framework Foundation")
 elseif(LINUX)
     if(NOT TARGET_CPU MATCHES "^arm")
         set(CXX_LIBS "-static-libgcc -stdlib=libc++ -lc++ -lc++abi")
@@ -93,7 +93,7 @@ elseif(LINUX)
 
     target_link_libraries(${PROJECT_NAME} ${CXX_LIBS})
 elseif(WIN32)
-    target_link_libraries(${PROJECT_NAME} shcore.lib)
+    target_link_libraries(${PROJECT_NAME})
 endif()
 
 install(TARGETS ${PROJECT_NAME}

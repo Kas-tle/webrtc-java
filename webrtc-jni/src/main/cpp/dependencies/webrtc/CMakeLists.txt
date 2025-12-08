@@ -154,7 +154,6 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${TARGET_INC_DIR}
         ${TARGET_INC_DIR}/third_party/abseil-cpp
-        ${TARGET_INC_DIR}/third_party/libyuv/include
 )
 target_link_libraries(${PROJECT_NAME} ${TARGET_LINK_LIB})
 
@@ -165,13 +164,13 @@ if(APPLE)
             ${TARGET_INC_DIR}/sdk/objc/base
     )
     target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_MAC WEBRTC_POSIX)
-    target_link_libraries(${PROJECT_NAME} "-framework Foundation" "-framework AVFoundation" "-framework CoreGraphics" "-framework CoreAudio" "-framework CoreVideo" "-framework ScreenCaptureKit" "-framework AudioToolbox" "-framework IOSurface" "-framework ApplicationServices" "-framework AppKit")
+    target_link_libraries(${PROJECT_NAME} "-framework Foundation")
 elseif(LINUX)
-    target_include_directories(${PROJECT_NAME} PUBLIC ${DBUS_INCLUDE_DIRS})
+    target_include_directories(${PROJECT_NAME} PUBLIC)
     target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_LINUX WEBRTC_POSIX)
 elseif(WIN32)
     target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_WIN NOMINMAX WIN32_LEAN_AND_MEAN NDEBUG)
-    target_link_libraries(${PROJECT_NAME} user32 iphlpapi secur32 ws2_32 winmm dmoguids wmcodecdspuuid msdmo strmiids)
+    target_link_libraries(${PROJECT_NAME} user32 iphlpapi secur32 ws2_32)
 endif()
 
 if(EXISTS "${WEBRTC_LIB_PATH}" OR EXISTS "${WEBRTC_LIB_PATH_INSTALLED}")
@@ -261,26 +260,33 @@ rtc_exclude_audio_processing_module=true \
 rtc_build_tools=false \
 rtc_build_examples=false \
 rtc_use_x11=false \
+rtc_use_x11_extensions=false \
 rtc_use_pipewire=false \
 rtc_link_pipewire=false \
 rtc_use_h264=false \
 rtc_include_builtin_audio_codecs=false \
 rtc_include_builtin_video_codecs=false \
+rtc_enable_win_wgc=false \
 rtc_build_libvpx=false \
 rtc_build_opus=false \
 rtc_libvpx_build_vp9=false \
 rtc_include_pulse_audio=false \
 rtc_include_internal_audio_device=false \
-rtc_desktop_capture_supported=false \
 rtc_use_perfetto=false \
 rtc_enable_protobuf=false \
 rtc_include_tests=false \
+rtc_use_gtk=false \
+rtc_build_libjpeg=false \
+rtc_build_openmax_dl=false \
+rtc_build_libyuv=false \
+rtc_include_dav1d_in_internal_decoder_factory=false \
 use_rtti=true \
 symbol_level=0 \
 use_dbus=false \
 use_udev=false \
 rtc_use_pulseaudio=false \
-rtc_disable_metrics=true")
+rtc_disable_metrics=true \ 
+proprietary_codecs=false")
 
 if(APPLE)
     set(COMPILE_ARGS "${COMPILE_ARGS} mac_deployment_target=\"${CMAKE_OSX_DEPLOYMENT_TARGET}\"")
