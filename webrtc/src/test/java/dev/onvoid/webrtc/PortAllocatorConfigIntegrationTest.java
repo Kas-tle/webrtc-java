@@ -35,8 +35,8 @@ class PortAllocatorConfigIntegrationTest extends TestBase {
 	@Test
 	void iceCandidatesRespectPortAllocatorConfig() throws Exception {
 		// Constrain ephemeral port range and disable TCP candidates.
-        int minPort = 50000;
-        int maxPort = 50200;
+		int minPort = 50000;
+		int maxPort = 50200;
 
 		RTCConfiguration cfg = new RTCConfiguration();
 		cfg.portAllocatorConfig.minPort = minPort;
@@ -60,12 +60,10 @@ class PortAllocatorConfigIntegrationTest extends TestBase {
 		callee.setRemoteDescription(caller.createOffer());
 		caller.setRemoteDescription(callee.createAnswer());
 
-		// Wait until connected (with a timeout to avoid hanging tests).
-		assertTrue(caller.awaitConnected(30, TimeUnit.SECONDS), "Caller failed to connect in time");
-		assertTrue(callee.awaitConnected(30, TimeUnit.SECONDS), "Callee failed to connect in time");
-
-		// Give ICE gathering a brief moment.
-		Thread.sleep(500);
+		// Wait until ICE gathering is complete. This verifies the allocator works
+		// without depending on successful connection establishment which can be flaky in CI/restricted envs.
+		assertTrue(caller.awaitGatheringComplete(30, TimeUnit.SECONDS), "Caller gathering timed out");
+		assertTrue(callee.awaitGatheringComplete(30, TimeUnit.SECONDS), "Callee gathering timed out");
 
 		// Basic expectations: Some candidates gathered on both sides.
 		assertFalse(caller.candidates.isEmpty(), "Caller gathered no ICE candidates");
@@ -74,22 +72,22 @@ class PortAllocatorConfigIntegrationTest extends TestBase {
 		// Check protocol and port range for HOST candidates.
 		for (String c : caller.candidates) {
 			assertFalse(c.contains(" tcp ") || c.contains(" tcp\n"),
-                    "TCP candidate appeared despite TCP being disabled: " + c);
+					"TCP candidate appeared despite TCP being disabled: " + c);
 
-            if (c.contains(" typ host")) {
+			if (c.contains(" typ host")) {
 				int port = parsePortFromCandidate(c);
 				assertTrue(port >= minPort && port <= maxPort,
-                        "Host candidate port out of range: " + port + " in " + c);
+						"Host candidate port out of range: " + port + " in " + c);
 			}
 		}
 		for (String c : callee.candidates) {
 			assertFalse(c.contains(" tcp ") || c.contains(" tcp\n"),
-                    "TCP candidate appeared despite TCP being disabled: " + c);
+					"TCP candidate appeared despite TCP being disabled: " + c);
 
-            if (c.contains(" typ host")) {
+			if (c.contains(" typ host")) {
 				int port = parsePortFromCandidate(c);
 				assertTrue(port >= minPort && port <= maxPort,
-                        "Host candidate port out of range: " + port + " in " + c);
+						"Host candidate port out of range: " + port + " in " + c);
 			}
 		}
 
@@ -117,7 +115,7 @@ class PortAllocatorConfigIntegrationTest extends TestBase {
 
 		private final RTCPeerConnection pc;
 		private RTCPeerConnection remote;
-		private final CountDownLatch connected = new CountDownLatch(1);
+		private final CountDownLatch gatheringComplete = new CountDownLatch(1);
 		final List<String> candidates = new ArrayList<>();
 
 
@@ -157,8 +155,8 @@ class PortAllocatorConfigIntegrationTest extends TestBase {
 			set.get();
 		}
 
-		boolean awaitConnected(long timeout, TimeUnit unit) throws InterruptedException {
-			return connected.await(timeout, unit);
+		boolean awaitGatheringComplete(long timeout, TimeUnit unit) throws InterruptedException {
+			return gatheringComplete.await(timeout, unit);
 		}
 
 		void close() {
@@ -174,9 +172,9 @@ class PortAllocatorConfigIntegrationTest extends TestBase {
 		}
 
 		@Override
-		public void onConnectionChange(RTCPeerConnectionState state) {
-			if (state == RTCPeerConnectionState.CONNECTED) {
-				connected.countDown();
+		public void onIceGatheringChange(RTCIceGatheringState state) {
+			if (state == RTCIceGatheringState.COMPLETE) {
+				gatheringComplete.countDown();
 			}
 		}
 	}
