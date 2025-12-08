@@ -164,7 +164,7 @@ if(APPLE)
             ${TARGET_INC_DIR}/sdk/objc/base
     )
     target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_MAC WEBRTC_POSIX)
-    target_link_libraries(${PROJECT_NAME} "-framework Foundation")
+    target_link_libraries(${PROJECT_NAME} "-framework Foundation" "-framework AVFoundation" "-framework CoreMedia" "-framework CoreVideo")
 elseif(LINUX)
     target_include_directories(${PROJECT_NAME} PUBLIC)
     target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_LINUX WEBRTC_POSIX)
@@ -198,7 +198,7 @@ file(MAKE_DIRECTORY ${WEBRTC_DIR})
 
 message(STATUS "WebRTC: fetch")
 execute_command(
-    COMMAND fetch --nohooks webrtc
+    COMMAND fetch --nohooks --no-history webrtc
     WORKING_DIRECTORY "${WEBRTC_DIR}"
 )
 
@@ -207,10 +207,37 @@ execute_command(
     COMMAND git checkout .
     WORKING_DIRECTORY "${WEBRTC_SRC}"
 )
+
+message(STATUS "WebRTC: fetching specific branch ${WEBRTC_BRANCH}")
+execute_command(
+    COMMAND git fetch origin ${WEBRTC_BRANCH}:${WEBRTC_BRANCH}
+    WORKING_DIRECTORY "${WEBRTC_SRC}"
+)
+
+message(STATUS "WebRTC: checkout to ${WEBRTC_BRANCH}")
 execute_command(
     COMMAND git checkout ${WEBRTC_BRANCH}
     WORKING_DIRECTORY "${WEBRTC_SRC}"
 )
+
+message(STATUS "WebRTC: Patching DEPS to skip download of test resources")
+set(DEPS_FILE "${WEBRTC_SRC}/DEPS")
+
+if(EXISTS "${DEPS_FILE}")
+    file(READ "${DEPS_FILE}" DEPS_CONTENT)
+
+    string(REPLACE 
+        "'src/resources']," 
+        "'src/resources'], 'condition': 'False'," 
+        DEPS_CONTENT 
+        "${DEPS_CONTENT}"
+    )
+
+    file(WRITE "${DEPS_FILE}" "${DEPS_CONTENT}")
+else()
+    message(WARNING "WebRTC: DEPS file not found. Optimization skipped.")
+endif()
+
 
 message(STATUS "WebRTC: sync")
 execute_command(
