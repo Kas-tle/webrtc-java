@@ -170,7 +170,7 @@ elseif(LINUX)
     target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_LINUX WEBRTC_POSIX)
 elseif(WIN32)
     target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_WIN NOMINMAX WIN32_LEAN_AND_MEAN NDEBUG)
-    target_link_libraries(${PROJECT_NAME} user32 iphlpapi secur32 ws2_32)
+    target_link_libraries(${PROJECT_NAME} user32 iphlpapi secur32 ws2_32 winmm)
 endif()
 
 if(EXISTS "${WEBRTC_LIB_PATH}" OR EXISTS "${WEBRTC_LIB_PATH_INSTALLED}")
@@ -241,7 +241,7 @@ endif()
 
 message(STATUS "WebRTC: sync")
 execute_command(
-    COMMAND gclient sync --no-history -j8
+    COMMAND gclient sync -D --no-history -j8
     WORKING_DIRECTORY "${WEBRTC_DIR}"
 )
 
@@ -300,7 +300,6 @@ rtc_include_internal_audio_device=false \
 rtc_use_perfetto=false \
 rtc_enable_protobuf=false \
 rtc_include_tests=false \
-rtc_use_gtk=false \
 rtc_include_dav1d_in_internal_decoder_factory=false \
 use_rtti=true \
 symbol_level=0 \
