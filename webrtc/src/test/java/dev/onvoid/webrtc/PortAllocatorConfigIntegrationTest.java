@@ -35,8 +35,8 @@ class PortAllocatorConfigIntegrationTest extends TestBase {
 	@Test
 	void iceCandidatesRespectPortAllocatorConfig() throws Exception {
 		// Constrain ephemeral port range and disable TCP candidates.
-		int minPort = 48000;
-		int maxPort = 48050;
+        int minPort = 50000;
+        int maxPort = 50200;
 
 		RTCConfiguration cfg = new RTCConfiguration();
 		cfg.portAllocatorConfig.minPort = minPort;

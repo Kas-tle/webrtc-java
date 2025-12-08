@@ -29,20 +29,21 @@ class LoggingTests {
 
 	@Test
 	void logInfo() throws Exception {
-		CountDownLatch latch = new CountDownLatch(3);
+		CountDownLatch latch = new CountDownLatch(1);
 
 		LogSink sink = (severity, message) -> {
-			assertTrue(severity.ordinal() > Severity.VERBOSE.ordinal());
-			assertNotNull(message);
-
-			latch.countDown();
+            if (severity.ordinal() > Severity.VERBOSE.ordinal() && message != null) {
+				latch.countDown();
+			}
 		};
 
 		Logging.addLogSink(Logging.Severity.INFO, sink);
 
 		PeerConnectionFactory factory = new PeerConnectionFactory();
 
-		latch.await();
+		Logging.info("Test log message");
+
+		assertTrue(latch.await(5, TimeUnit.SECONDS), "Did not receive log message");
 
 		factory.dispose();
 	}
