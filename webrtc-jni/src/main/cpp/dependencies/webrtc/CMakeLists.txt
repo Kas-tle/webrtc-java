@@ -220,29 +220,43 @@ execute_command(
     WORKING_DIRECTORY "${WEBRTC_SRC}"
 )
 
-message(STATUS "WebRTC: Patching DEPS to skip download of test resources")
-set(DEPS_FILE "${WEBRTC_SRC}/DEPS")
+message(STATUS "WebRTC: optimizing .gclient configuration")
 
-if(EXISTS "${DEPS_FILE}")
-    file(READ "${DEPS_FILE}" DEPS_CONTENT)
-
-    string(REPLACE 
-        "'src/resources']," 
-        "'src/resources'], 'condition': 'False'," 
-        DEPS_CONTENT 
-        "${DEPS_CONTENT}"
-    )
-
-    file(WRITE "${DEPS_FILE}" "${DEPS_CONTENT}")
+# Determine target OS for the configuration
+if(APPLE)
+    set(GCLIENT_TARGET_OS "mac")
+elseif(WIN32)
+    set(GCLIENT_TARGET_OS "win")
 else()
-    message(WARNING "WebRTC: DEPS file not found. Optimization skipped.")
+    set(GCLIENT_TARGET_OS "linux")
 endif()
 
+set(GCLIENT_CONTENT "solutions = [{
+  'name': 'src',
+  'url': 'https://webrtc.googlesource.com/src.git',
+  'deps_file': 'DEPS',
+  'managed': False,
+  'custom_deps': {
+    'src/resources': None,
+  },
+  'custom_vars': {
+    'checkout_test': False,
+    'checkout_tests': False,
+    'checkout_android': False,
+    'checkout_ios': False,
+    'rtc_include_tests': False,
+  },
+}]
+target_os = ['${GCLIENT_TARGET_OS}']
+")
 
-message(STATUS "WebRTC: sync")
+# Write this optimized config to the .gclient file
+file(WRITE "${WEBRTC_DIR}/.gclient" "${GCLIENT_CONTENT}")
+
+message(STATUS "WebRTC: Full gclient sync (optimized)")
 execute_command(
-    COMMAND gclient sync
-    WORKING_DIRECTORY "${WEBRTC_DIR}"
+    COMMAND gclient sync -D -j 16
+    WORKING_DIRECTORY "${WEBRTC_SRC}"
 )
 
 if(LINUX)
@@ -292,7 +306,6 @@ rtc_use_pipewire=false \
 rtc_link_pipewire=false \
 rtc_use_h264=false \
 rtc_include_builtin_audio_codecs=false \
-rtc_include_builtin_video_codecs=false \
 rtc_enable_win_wgc=false \
 rtc_build_libvpx=false \
 rtc_build_opus=false \
