@@ -241,7 +241,7 @@ endif()
 
 message(STATUS "WebRTC: sync")
 execute_command(
-    COMMAND gclient sync -j8
+    COMMAND gclient sync --no-history -j8
     WORKING_DIRECTORY "${WEBRTC_DIR}"
 )
 
