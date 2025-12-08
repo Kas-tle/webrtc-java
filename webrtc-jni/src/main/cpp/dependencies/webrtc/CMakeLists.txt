@@ -276,7 +276,6 @@ rtc_use_perfetto=false \
 rtc_enable_protobuf=false \
 rtc_include_tests=false \
 rtc_use_gtk=false \
-rtc_build_libjpeg=false \
 rtc_build_openmax_dl=false \
 rtc_build_libyuv=false \
 rtc_include_dav1d_in_internal_decoder_factory=false \
