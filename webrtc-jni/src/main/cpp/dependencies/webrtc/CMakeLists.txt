@@ -231,7 +231,7 @@ if (PATCHES)
         message(STATUS "Applying ${PATCH}")
 
         execute_process(
-            COMMAND git apply
+            COMMAND git apply --ignore-whitespace
             WORKING_DIRECTORY "${WEBRTC_SRC}"
             INPUT_FILE "${PATCH}"
             OUTPUT_VARIABLE OUTPUT
@@ -276,7 +276,6 @@ rtc_use_perfetto=false \
 rtc_enable_protobuf=false \
 rtc_include_tests=false \
 rtc_use_gtk=false \
-rtc_build_openmax_dl=false \
 rtc_include_dav1d_in_internal_decoder_factory=false \
 use_rtti=true \
 symbol_level=0 \
