@@ -307,16 +307,7 @@ use_rtti=true \
 symbol_level=0 \
 use_dbus=false \
 use_udev=false \
-proprietary_codecs=false \
-enable_libaom=false \
-enable_freetype=false \
-libyuv_disable_jpeg=true \
-archive_seed_corpus=false \
-use_aura=false \
-use_blink=false \
-use_libjpeg_turbo=false \
-use_ozone=false \
-libyuv_include_tests=false")
+proprietary_codecs=false")
 
 if(APPLE)
     set(COMPILE_ARGS "${COMPILE_ARGS} mac_deployment_target=\"${CMAKE_OSX_DEPLOYMENT_TARGET}\"")
