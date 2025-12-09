@@ -301,13 +301,25 @@ rtc_use_perfetto=false \
 rtc_enable_protobuf=false \
 rtc_include_tests=false \
 rtc_include_dav1d_in_internal_decoder_factory=false \
+rtc_enable_google_benchmarks=false \
+rtc_video_psnr=false \
 use_rtti=true \
 symbol_level=0 \
 use_dbus=false \
 use_udev=false \
-rtc_use_pulseaudio=false \
 rtc_disable_metrics=true \ 
-proprietary_codecs=false")
+proprietary_codecs=false \
+is_official_build=true \
+enable_stripping=true \
+enable_libaom=false \
+enable_freetype=false \
+libyuv_disable_jpeg=true \
+archive_seed_corpus=false \
+use_aura=false \
+use_blink=false \
+use_libjpeg_turbo=false \
+use_ozone=false \
+libyuv_include_tests=false")
 
 if(APPLE)
     set(COMPILE_ARGS "${COMPILE_ARGS} mac_deployment_target=\"${CMAKE_OSX_DEPLOYMENT_TARGET}\"")
