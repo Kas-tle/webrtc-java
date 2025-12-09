@@ -68,22 +68,6 @@
 	"methods":[{"name":"values","parameterTypes":[] }]
   },
   {
-	"name":"dev.onvoid.webrtc.RTCRtpReceiver",
-	"methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.RTCRtpSender",
-	"methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.RTCRtpTransceiver",
-	"methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.RTCRtpTransceiverDirection",
-	"methods":[{"name":"values","parameterTypes":[] }]
-  },
-  {
 	"name":"dev.onvoid.webrtc.RTCSdpType",
 	"methods":[{"name":"values","parameterTypes":[] }]
   },
@@ -105,57 +89,6 @@
   },
   {
 	"name":"dev.onvoid.webrtc.logging.Logging$Severity",
-	"methods":[{"name":"values","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.Device",
-	"fields":[
-	  {"name":"descriptor"},
-	  {"name":"name"}
-	]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.MediaSource$State",
-	"methods":[{"name":"values","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.MediaStream",
-	"methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.MediaStreamTrackState",
-	"methods":[{"name":"values","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.MediaType",
-	"methods":[{"name":"values","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.audio.AudioDevice",
-	"methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String"] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.audio.AudioLayer",
-	"methods":[{"name":"values","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.audio.AudioProcessingConfig$NoiseSuppression$Level",
-	"methods":[{"name":"values","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.audio.AudioTrack",
-	"methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.audio.AudioTrackSource",
-	"methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.video.VideoTrack",
-	"methods":[{"name":"<init>","parameterTypes":[] }]
-  },
-  {
-	"name":"dev.onvoid.webrtc.media.video.desktop.DesktopCapturer$Result",
 	"methods":[{"name":"values","parameterTypes":[] }]
   }
 ]

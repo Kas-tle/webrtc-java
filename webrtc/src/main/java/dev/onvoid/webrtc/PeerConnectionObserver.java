@@ -16,8 +16,6 @@
 
 package dev.onvoid.webrtc;
 
-import dev.onvoid.webrtc.media.MediaStream;
-
 /**
  * RTCPeerConnection callback interface.
  *
@@ -98,22 +96,6 @@ public interface PeerConnectionObserver {
 	}
 
 	/**
-	 * Media is received on a new stream from the remote peer.
-	 *
-	 * @param stream The new media stream.
-	 */
-	default void onAddStream(MediaStream stream) {
-	}
-
-	/**
-	 * The remote peer has closed a stream.
-	 *
-	 * @param stream The closed media stream.
-	 */
-	default void onRemoveStream(MediaStream stream) {
-	}
-
-	/**
 	 * The remote peer has opened a RTCDataChannel.
 	 *
 	 * @param dataChannel The opened data channel.
@@ -126,48 +108,6 @@ public interface PeerConnectionObserver {
 	 * done (i.e. a createOffer call followed by setLocalDescription).
 	 */
 	default void onRenegotiationNeeded() {
-	}
-
-	/**
-	 * New incoming media has been negotiated for a specific RTCRtpReceiver, and
-	 * that receiver's track has been added to any associated remote
-	 * MediaStreams.
-	 * <p>
-	 * Note: This is called with both Plan B and Unified Plan semantics. Unified
-	 * Plan users should prefer OnTrack, OnAddTrack is only called as backwards
-	 * compatibility (and is called in the exact same situations as OnTrack).
-	 *
-	 * @param receiver     The created RTP receiver.
-	 * @param mediaStreams Associated remote MediaStreams of the negotiated
-	 *                     media track.
-	 */
-	default void onAddTrack(RTCRtpReceiver receiver, MediaStream[] mediaStreams) {
-	}
-
-	/**
-	 * Called when signaling indicates that media will no longer be received on
-	 * a track.
-	 * <p>
-	 * With Plan B semantics, the given receiver will have been removed from the
-	 * PeerConnection and the track muted.
-	 * <p>
-	 * With Unified Plan semantics, the receiver will remain but the transceiver
-	 * will have changed direction to either "SendOnly" or "Inactive".
-	 *
-	 * @param receiver The RTP receiver of the removed track.
-	 */
-	default void onRemoveTrack(RTCRtpReceiver receiver) {
-	}
-
-	/**
-	 * Called when signaling indicates a transceiver will be receiving media
-	 * from the remote peer, as a result of SetRemoteDescription.
-	 * <p>
-	 * Note: This will only be called if Unified Plan semantics are specified.
-	 *
-	 * @param transceiver The RTP transceiver of the created track.
-	 */
-	default void onTrack(RTCRtpTransceiver transceiver) {
 	}
 
 }

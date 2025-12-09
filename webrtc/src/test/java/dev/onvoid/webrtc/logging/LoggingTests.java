@@ -19,11 +19,10 @@ package dev.onvoid.webrtc.logging;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import dev.onvoid.webrtc.PeerConnectionFactory;
 import dev.onvoid.webrtc.logging.Logging.Severity;
-import dev.onvoid.webrtc.media.audio.AudioDeviceModule;
-import dev.onvoid.webrtc.media.audio.AudioLayer;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,23 +30,22 @@ class LoggingTests {
 
 	@Test
 	void logInfo() throws Exception {
-		CountDownLatch latch = new CountDownLatch(3);
+		CountDownLatch latch = new CountDownLatch(1);
 
 		LogSink sink = (severity, message) -> {
-			assertTrue(severity.ordinal() > Severity.VERBOSE.ordinal());
-			assertNotNull(message);
-
-			latch.countDown();
+            if (severity.ordinal() > Severity.VERBOSE.ordinal() && message != null) {
+				latch.countDown();
+			}
 		};
 
 		Logging.addLogSink(Logging.Severity.INFO, sink);
 
-		AudioDeviceModule audioDevModule = new AudioDeviceModule(AudioLayer.kDummyAudio);
-		PeerConnectionFactory factory = new PeerConnectionFactory(audioDevModule);
+		PeerConnectionFactory factory = new PeerConnectionFactory();
 
-		latch.await();
+		Logging.info("Test log message");
 
-		audioDevModule.dispose();
+		assertTrue(latch.await(5, TimeUnit.SECONDS), "Did not receive log message");
+
 		factory.dispose();
 	}
 

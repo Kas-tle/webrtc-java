@@ -17,7 +17,6 @@
 package dev.onvoid.webrtc;
 
 import dev.onvoid.webrtc.internal.NativeObject;
-import dev.onvoid.webrtc.media.MediaStreamTrack;
 
 import java.util.List;
 
@@ -46,72 +45,6 @@ public class RTCPeerConnection extends NativeObject {
 	}
 
 	/**
-	 * Returns an array of {@link RTCRtpSender} objects representing the RTP
-	 * senders that belong to non-stopped {@link RTCRtpTransceiver} objects
-	 * currently attached to this RTCPeerConnection.
-	 *
-	 * @return An array of RTP senders.
-	 */
-	public native RTCRtpSender[] getSenders();
-
-	/**
-	 * Returns an array of {@link RTCRtpReceiver} objects representing the RTP
-	 * receivers that belong to non-stopped {@link RTCRtpTransceiver} objects
-	 * currently attached to this RTCPeerConnection.
-	 *
-	 * @return An array of RTP receivers.
-	 */
-	public native RTCRtpReceiver[] getReceivers();
-
-	/**
-	 * Returns an array of {@link RTCRtpTransceiver} objects representing the
-	 * RTP transceivers that are currently attached to this RTCPeerConnection.
-	 *
-	 * @return An array of RTP transceivers.
-	 */
-	public native RTCRtpTransceiver[] getTransceivers();
-
-	/**
-	 * Adds a new track to the RTCPeerConnection, and indicates that it is
-	 * contained in the specified MediaStreams.
-	 *
-	 * @param track     A MediaStreamTrack representing the media track to
-	 *                  transmit.
-	 * @param streamIds A list of MediaStream ids to which the track belongs
-	 *                  to.
-	 *
-	 * @return The RTCRtpSender which will be used to transmit the media data.
-	 */
-	public native RTCRtpSender addTrack(MediaStreamTrack track,
-			List<String> streamIds);
-
-	/**
-	 * Stops sending media from sender. The RTCRtpSender will still appear in
-	 * {@link #getSenders()}. Doing so will cause future calls to {@link
-	 * #createOffer} to mark the media description for the corresponding
-	 * transceiver as {@link RTCRtpTransceiverDirection#RECV_ONLY} or {@link
-	 * RTCRtpTransceiverDirection#INACTIVE}.
-	 *
-	 * @param sender The RTCRtpSender to remove from the connection.
-	 */
-	public native void removeTrack(RTCRtpSender sender);
-
-	/**
-	 * Create a new RTCRtpTransceiver and add it to the set of transceivers.
-	 * Adding a transceiver will cause future calls to {@link #createOffer} to
-	 * add a media description for the corresponding transceiver.
-	 *
-	 * @param track A MediaStreamTrack representing the media track to
-	 *              transmit.
-	 * @param init  The transceiver configuration options.
-	 *
-	 * @return The RTCRtpTransceiver which will be used to transmit and receive
-	 * the media data.
-	 */
-	public native RTCRtpTransceiver addTransceiver(MediaStreamTrack track,
-			RTCRtpTransceiverInit init);
-
-	/**
 	 * Creates a new RTCDataChannel object with the given label. The
 	 * RTCDataChannelInit dictionary can be used to configure properties of the
 	 * underlying channel such as data reliability.
@@ -127,8 +60,7 @@ public class RTCPeerConnection extends NativeObject {
 
 	/**
 	 * Initiates the creation of an SDP that contains an RFC 3264 offer with the
-	 * supported configurations for the session, including descriptions of the
-	 * local MediaStreamTracks attached to this RTCPeerConnection, the
+	 * supported configurations for the session, the
 	 * codec/RTP/RTCP capabilities supported by this implementation, and
 	 * parameters of the ICE agent and the DTLS connection.
 	 *
@@ -142,11 +74,9 @@ public class RTCPeerConnection extends NativeObject {
 	/**
 	 * Generates an SDP answer to an offer received from a remote peer with the
 	 * supported configuration for the session that is compatible with the
-	 * parameters in the remote configuration. Like {@code createOffer}, the
-	 * returned SDP contains descriptions of the local MediaStreamTracks
-	 * attached to this RTCPeerConnection, the codec/RTP/RTCP options negotiated
-	 * for this session, and any candidates that have been gathered by the ICE
-	 * Agent.
+	 * parameters in the remote configuration. Like {@code createOffer}, 
+     * the codec/RTP/RTCP options negotiated for this session, and any candidates 
+     * that have been gathered by the ICE Agent.
 	 *
 	 * @param options  The options to provide additional control over the
 	 *                 answer.
@@ -305,24 +235,6 @@ public class RTCPeerConnection extends NativeObject {
 	 * @param callback The callback to receive the generated stats.
 	 */
 	public native void getStats(RTCStatsCollectorCallback callback);
-
-	/**
-	 * Gathers the current statistics of the specified RTCRtpReceiver.
-	 *
-	 * @param receiver The RTCRtpReceiver of which to gather the stats.
-	 * @param callback The callback to receive the generated stats.
-	 */
-	public native void getStats(RTCRtpReceiver receiver,
-			RTCStatsCollectorCallback callback);
-
-	/**
-	 * Gathers the current statistics of the specified RTCRtpSender.
-	 *
-	 * @param sender   The RTCRtpSender of which to gather the stats.
-	 * @param callback The callback to receive the generated stats.
-	 */
-	public native void getStats(RTCRtpSender sender,
-			RTCStatsCollectorCallback callback);
 
 	/**
 	 * Tells the RTCPeerConnection that ICE should be restarted. Subsequent

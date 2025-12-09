@@ -22,7 +22,6 @@
 #include "api/RTCDataChannelInit.h"
 #include "api/RTCIceCandidate.h"
 #include "api/RTCOfferOptions.h"
-#include "api/RTCRtpTransceiverInit.h"
 #include "api/RTCSessionDescription.h"
 #include "api/RTCStatsCollectorCallback.h"
 #include "api/WebRTCUtils.h"
@@ -39,8 +38,6 @@
 #include "JavaUtils.h"
 
 #include "api/peer_connection_interface.h"
-#include "api/rtp_receiver_interface.h"
-#include "api/rtp_sender_interface.h"
 
 #include <string>
 #include <vector>
@@ -97,97 +94,6 @@ JNIEXPORT jobjectArray JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_getTrans
 	}
 
 	return objectArray.release();
-}
-
-JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_addTrack
-(JNIEnv * env, jobject caller, jobject jTrack, jobject jStreamIds)
-{
-	if (jTrack == nullptr) {
-		env->Throw(jni::JavaNullPointerException(env, "MediaStreamTrack must not be null"));
-		return nullptr;
-	}
-	if (jStreamIds == nullptr) {
-		env->Throw(jni::JavaNullPointerException(env, "Stream IDs must not be null"));
-		return nullptr;
-	}
-
-	webrtc::PeerConnectionInterface * pc = GetHandle<webrtc::PeerConnectionInterface>(env, caller);
-	CHECK_HANDLEV(pc, nullptr);
-
-	webrtc::MediaStreamTrackInterface * track = GetHandle<webrtc::MediaStreamTrackInterface>(env, jTrack);
-	CHECK_HANDLEV(track, nullptr);
-
-	std::vector<std::string> streamIDs = jni::JavaList::toStringVector(env, jni::JavaLocalRef<jobject>(env, jStreamIds));
-
-	auto result = pc->AddTrack(webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>(track), streamIDs);
-
-	if (result.ok()) {
-		auto sender = result.MoveValue();
-
-		return jni::JavaFactories::create(env, sender.release()).release();
-	}
-	
-	env->Throw(jni::JavaRuntimeException(env, jni::RTCErrorToString(result.error()).c_str()));
-
-	return nullptr;
-}
-
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_removeTrack
-(JNIEnv * env, jobject caller, jobject jSender)
-{
-	if (jSender == nullptr) {
-		env->Throw(jni::JavaNullPointerException(env, "RTCRtpSender must not be null"));
-		return;
-	}
-
-	webrtc::PeerConnectionInterface * pc = GetHandle<webrtc::PeerConnectionInterface>(env, caller);
-	CHECK_HANDLE(pc);
-
-	webrtc::RtpSenderInterface * sender = GetHandle<webrtc::RtpSenderInterface>(env, jSender);
-	CHECK_HANDLE(sender);
-
-	auto result = pc->RemoveTrackOrError(webrtc::scoped_refptr<webrtc::RtpSenderInterface>(sender));
-
-	if (!result.ok()) {
-		env->Throw(jni::JavaRuntimeException(env, "Remove track (RTCRtpSender) failed: %s %s",
-			ToString(result.type()), result.message()));
-	}
-}
-
-JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_addTransceiver
-(JNIEnv * env, jobject caller, jobject jTrack, jobject jTransceiverInit)
-{
-	if (jTrack == nullptr) {
-		env->Throw(jni::JavaNullPointerException(env, "MediaStreamTrack must not be null"));
-		return nullptr;
-	}
-
-	webrtc::PeerConnectionInterface * pc = GetHandle<webrtc::PeerConnectionInterface>(env, caller);
-	CHECK_HANDLEV(pc, nullptr);
-
-	webrtc::MediaStreamTrackInterface * track = GetHandle<webrtc::MediaStreamTrackInterface>(env, jTrack);
-	CHECK_HANDLEV(track, nullptr);
-
-	webrtc::RTCErrorOr<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>> result;
-
-	if (jTransceiverInit != nullptr) {
-		auto init = jni::RTCRtpTransceiverInit::toNative(env, jni::JavaLocalRef<jobject>(env, jTransceiverInit));
-
-		result = pc->AddTransceiver(webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>(track), init);
-	}
-	else {
-		result = pc->AddTransceiver(webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>(track));
-	}
-
-	if (result.ok()) {
-		auto transceiver = result.MoveValue();
-
-		return jni::JavaFactories::create(env, transceiver.release()).release();
-	}
-
-	env->Throw(jni::JavaRuntimeException(env, jni::RTCErrorToString(result.error()).c_str()));
-
-	return nullptr;
 }
 
 JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_createDataChannel
@@ -534,52 +440,6 @@ JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_getStats__Ldev_o
 	auto callback = new webrtc::RefCountedObject<jni::RTCStatsCollectorCallback>(env, jni::JavaGlobalRef<jobject>(env, jcallback));
 
 	pc->GetStats(callback);
-}
-
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_getStats__Ldev_onvoid_webrtc_RTCRtpReceiver_2Ldev_onvoid_webrtc_RTCStatsCollectorCallback_2
-(JNIEnv * env, jobject caller, jobject jreceiver, jobject jcallback)
-{
-	webrtc::PeerConnectionInterface * pc = GetHandle<webrtc::PeerConnectionInterface>(env, caller);
-	CHECK_HANDLE(pc);
-
-	if (jreceiver == nullptr) {
-		env->Throw(jni::JavaNullPointerException(env, "RTCRtpReceiver is null"));
-		return;
-	}
-	if (jcallback == nullptr) {
-		env->Throw(jni::JavaNullPointerException(env, "RTCStatsCollectorCallback is null"));
-		return;
-	}
-
-	webrtc::RtpReceiverInterface * receiver = GetHandle<webrtc::RtpReceiverInterface>(env, jreceiver);
-	CHECK_HANDLE(receiver);
-
-	auto callback = new webrtc::RefCountedObject<jni::RTCStatsCollectorCallback>(env, jni::JavaGlobalRef<jobject>(env, jcallback));
-
-	pc->GetStats(webrtc::scoped_refptr<webrtc::RtpReceiverInterface>(receiver), webrtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>(callback));
-}
-
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_getStats__Ldev_onvoid_webrtc_RTCRtpSender_2Ldev_onvoid_webrtc_RTCStatsCollectorCallback_2
-(JNIEnv * env, jobject caller, jobject jsender, jobject jcallback)
-{
-	webrtc::PeerConnectionInterface * pc = GetHandle<webrtc::PeerConnectionInterface>(env, caller);
-	CHECK_HANDLE(pc);
-
-	if (jsender == nullptr) {
-		env->Throw(jni::JavaNullPointerException(env, "RTCRtpSender is null"));
-		return;
-	}
-	if (jcallback == nullptr) {
-		env->Throw(jni::JavaNullPointerException(env, "RTCStatsCollectorCallback is null"));
-		return;
-	}
-
-	webrtc::RtpSenderInterface * sender = GetHandle<webrtc::RtpSenderInterface>(env, jsender);
-	CHECK_HANDLE(sender);
-
-	auto callback = new webrtc::RefCountedObject<jni::RTCStatsCollectorCallback>(env, jni::JavaGlobalRef<jobject>(env, jcallback));
-
-	pc->GetStats(webrtc::scoped_refptr<webrtc::RtpSenderInterface>(sender), webrtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>(callback));
 }
 
 JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCPeerConnection_restartIce

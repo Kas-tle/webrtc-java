@@ -8,6 +8,7 @@ on:
       - "**.cpp"
       - "**.h"
       - "**.java"
+      - "**/CMakeLists.txt"
 
   pull_request:
     branches:
