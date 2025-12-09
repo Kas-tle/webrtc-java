@@ -308,7 +308,11 @@ symbol_level=0 \
 use_dbus=false \
 use_udev=false \
 proprietary_codecs=false \
-is_official_build=true")
+enable_libaom=false \
+enable_freetype=false \
+libyuv_disable_jpeg=true \
+libyuv_disable_rvv=true \
+libyuv_include_tests=false")
 
 if(APPLE)
     set(COMPILE_ARGS "${COMPILE_ARGS} mac_deployment_target=\"${CMAKE_OSX_DEPLOYMENT_TARGET}\"")
