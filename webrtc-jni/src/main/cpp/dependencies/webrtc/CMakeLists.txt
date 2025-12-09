@@ -307,7 +307,6 @@ use_rtti=true \
 symbol_level=0 \
 use_dbus=false \
 use_udev=false \
-rtc_disable_metrics=true \ 
 proprietary_codecs=false \
 enable_libaom=false \
 enable_freetype=false \
