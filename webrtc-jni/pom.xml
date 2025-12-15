@@ -13,8 +13,6 @@
 
 	<properties>
 		<webrtc.branch>branch-heads/7339</webrtc.branch>
-		<webrtc.src.dir>${user.home}/webrtc</webrtc.src.dir>
-		<webrtc.install.dir>${user.home}/webrtc/build</webrtc.install.dir>
 		<cmake.build.type>Release</cmake.build.type>
 		<cmake.toolchain.file />
 		<cmake.clang />
@@ -100,12 +98,6 @@
 									-DWEBRTC_BRANCH=${webrtc.branch}
 								</option>
 								<option>
-									-DWEBRTC_SRC_DIR=${webrtc.src.dir}
-								</option>
-								<option>
-									-DWEBRTC_INSTALL_DIR=${webrtc.install.dir}
-								</option>
-								<option>
 									-DCMAKE_BUILD_TYPE=${cmake.build.type}
 								</option>
 								<option>
@@ -114,6 +106,9 @@
 								<option>
 									-DOUTPUT_NAME_SUFFIX=${platform.classifier}
 								</option>
+                                <option>
+                                    -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+                                </option>
 							</options>
 						</configuration>
 					</execution>

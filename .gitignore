@@ -14,3 +14,10 @@
 *.so
 *.dylib
 *.dll
+
+webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian*amd64*
+webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian*armhf*
+webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian*arm64*
+webrtc-jni/src/main/cpp/dependencies/webrtc/webrtc-source/
+.cache/
+compile_commands.json

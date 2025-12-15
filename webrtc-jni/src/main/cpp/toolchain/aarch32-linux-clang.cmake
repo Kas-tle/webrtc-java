@@ -1,27 +1,62 @@
 set(CMAKE_SYSTEM_NAME       Linux)
 set(CMAKE_SYSTEM_PROCESSOR  arm)
-set(CMAKE_C_COMPILER        /opt/clang/bin/clang)
-set(CMAKE_CXX_COMPILER      /opt/clang/bin/clang++)
-set(CMAKE_AR                /opt/clang/bin/llvm-ar)
+
+find_program(CLANG_BIN clang
+    HINTS /opt/clang/bin /usr/bin /usr/local/bin
+    DOC "Path to clang executable"
+)
+find_program(CLANGXX_BIN clang++
+    HINTS /opt/clang/bin /usr/bin /usr/local/bin
+    DOC "Path to clang++ executable"
+)
+
+if(NOT CLANG_BIN OR NOT CLANGXX_BIN)
+    message(FATAL_ERROR "Clang not found. Please install clang.")
+endif()
+
+set(CMAKE_C_COMPILER        ${CLANG_BIN})
+set(CMAKE_CXX_COMPILER      ${CLANGXX_BIN})
+
+find_program(LLVM_AR_BIN llvm-ar
+    HINTS /opt/clang/bin /usr/bin /usr/local/bin
+)
+if(LLVM_AR_BIN)
+    set(CMAKE_AR ${LLVM_AR_BIN})
+    find_program(LLVM_RANLIB_BIN llvm-ranlib HINTS /opt/clang/bin /usr/bin /usr/local/bin)
+    if(LLVM_RANLIB_BIN)
+        set(CMAKE_RANLIB ${LLVM_RANLIB_BIN})
+    endif()
+endif()
+
+find_program(LLD_BIN ld.lld
+    HINTS /opt/clang/bin /usr/bin /usr/local/bin
+)
 
 set(TARGET_TRIPLE           arm-linux-gnueabihf)
 
 set(CMAKE_C_FLAGS           "--target=${TARGET_TRIPLE} -march=armv7-a -mfloat-abi=hard -mfpu=neon")
+if(LLD_BIN)
+    set(CMAKE_C_FLAGS       "${CMAKE_C_FLAGS} -fuse-ld=lld")
+endif()
+
 set(CMAKE_CXX_FLAGS         "${CMAKE_C_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -v -Wl,--verbose")
 
-foreach(LINKER SHARED_LINKER)
-    set(CMAKE_${LINKER}_FLAGS "-fuse-ld=lld -Wl,-s -v -Wl,--verbose")
-endforeach()
+get_filename_component(TOOLCHAIN_DIR ${CMAKE_CURRENT_LIST_FILE} DIRECTORY)
+set(LOCAL_SYSROOT_PATH "${TOOLCHAIN_DIR}/../dependencies/webrtc/linux")
 
-# IMPORTANT: Find sysroot but DO NOT set CMAKE_SYSROOT yet
-file(GLOB LINUX_SYSROOT "/opt/sysroot/debian*armhf*")
-if(NOT LINUX_SYSROOT)
-    message(FATAL_ERROR "No debian armhf sysroot found in /opt/sysroot/")
+file(GLOB LINUX_SYSROOT 
+    "/opt/sysroot/debian*armhf*"
+    "${LOCAL_SYSROOT_PATH}/debian*armhf*"
+)
+
+if(LINUX_SYSROOT)
+    list(GET LINUX_SYSROOT 0 SELECTED_SYSROOT)
+    message(STATUS "Found Sysroot: ${SELECTED_SYSROOT}")
+    set(CMAKE_SYSROOT ${SELECTED_SYSROOT})
+    set(DEFERRED_SYSROOT ${SELECTED_SYSROOT})
+else()
+    message(FATAL_ERROR "No armhf sysroot found. Please run 'python3 install-sysroot.py --arch=armhf'")
 endif()
 
-# Store sysroot path for later application
-# This will be set after project() call in the main CMakeLists.txt
-set(DEFERRED_SYSROOT ${LINUX_SYSROOT})
-
-set(TARGET_CPU              "arm")
+set(TARGET_CPU "arm")

@@ -10,8 +10,7 @@ on:
 
 env:
   WEBRTC_CACHE_BRANCH: 7339
-  WEBRTC_CHECKOUT_FOLDER: webrtc
-  WEBRTC_INSTALL_FOLDER: webrtc/build
+  WEBRTC_CHECKOUT_FOLDER: ~/webrtc
 
 jobs:
   changelog:

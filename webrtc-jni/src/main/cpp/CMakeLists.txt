@@ -7,6 +7,15 @@ endif()
 
 project(webrtc-java)
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND LINUX)
+    add_compile_options(-nostdinc++ -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE)
+    add_link_options(-stdlib=libc++ -v -Wl,--verbose)
+    find_program(LLD_PATH ld.lld)
+    if(LLD_PATH)
+        add_link_options(-fuse-ld=lld)
+    endif()
+endif()
+
 if(UNIX AND NOT APPLE)
     # Apply the sysroot configuration for the actual build
     if(DEFERRED_SYSROOT)
@@ -100,3 +109,28 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX} COMPONENT Runtime
     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX} COMPONENT Runtime
 )
+
+if (PROJECT_IS_TOP_LEVEL)
+    get_filename_component(TARGET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../.." ABSOLUTE)
+    
+    set(COMPILE_COMMANDS_SRC "${CMAKE_BINARY_DIR}/compile_commands.json")
+    set(COMPILE_COMMANDS_DST "${TARGET_DIR}/compile_commands.json")
+
+    if (WIN32)
+        # Windows: Copy instead of symlink to avoid permission issues
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${COMPILE_COMMANDS_SRC}"
+                "${COMPILE_COMMANDS_DST}"
+        )
+        message(STATUS "Copied compile_commands.json to: ${TARGET_DIR}")
+    else()
+        # Unix: Symlink
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E create_symlink
+                "${COMPILE_COMMANDS_SRC}"
+                "${COMPILE_COMMANDS_DST}"
+        )
+        message(STATUS "Created compile_commands.json symlink in: ${TARGET_DIR}")
+    endif()
+endif()

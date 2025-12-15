@@ -34,7 +34,7 @@ runs:
     - name: Set up WebRTC cache
       uses: actions/cache@v4
       with:
-        path: ~/${{ env.WEBRTC_INSTALL_FOLDER }}
+        path: ${{ env.WEBRTC_CHECKOUT_FOLDER }}/build
         key: webrtc-${{ env.WEBRTC_CACHE_BRANCH }}-${{ inputs.platform-name }}-${{ hashFiles('webrtc-jni/pom.xml') }}
         restore-keys: webrtc-${{ env.WEBRTC_CACHE_BRANCH }}-${{ inputs.platform-name }}-
 
