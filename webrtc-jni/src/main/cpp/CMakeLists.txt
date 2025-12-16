@@ -8,11 +8,19 @@ endif()
 project(webrtc-java)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND LINUX)
-    add_compile_options(-nostdinc++ -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE)
-    add_link_options(-stdlib=libc++ -v -Wl,--verbose)
-    find_program(LLD_PATH ld.lld)
+    find_program(LLD_PATH ld.lld 
+        HINTS /opt/clang/bin /usr/bin /usr/local/bin
+        DOC "Path to lld linker"
+    )
     if(LLD_PATH)
+        message(STATUS "Found LLD: ${LLD_PATH}")
         add_link_options(-fuse-ld=lld)
+    else()
+        message(WARNING "LLD not found! Linker errors may occur.")
+    endif()
+    if(TARGET_CPU STREQUAL "x64")
+        add_compile_options(-nostdinc++ -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE)
+        add_link_options(-stdlib=libc++ -v -Wl,--verbose)
     endif()
 endif()
 
