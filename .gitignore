@@ -15,9 +15,20 @@
 *.dylib
 *.dll
 
+# Gradle
+.gradle
+**/build/
+!src/**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# Local sysroot files
 webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian*amd64*
 webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian*armhf*
 webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian*arm64*
 webrtc-jni/src/main/cpp/dependencies/webrtc/webrtc-source/
+
+# VSCode / clangd
 .cache/
 compile_commands.json
