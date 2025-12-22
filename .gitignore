@@ -22,6 +22,7 @@
 gradle-app.setting
 !gradle-wrapper.jar
 !gradle-wrapper.properties
+bin/
 
 # Local sysroot files
 webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian*amd64*

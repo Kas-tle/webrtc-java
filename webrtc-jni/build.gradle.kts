@@ -1,127 +1,114 @@
-import io.github.tomaki19.gradle.cmake.extension.api.CMakeToolchain
 import org.gradle.internal.os.OperatingSystem
 
 plugins {
-    alias(libs.plugins.cmake)
-    id("base")
+    `java`
 }
 
-// Read the target platform passed from GitHub Actions (e.g., -Pplatform=linux_arm64)
-val targetPlatform: String = (project.findProperty("platform") as? String) ?: run {
-    val os = OperatingSystem.current()
-    val arch = System.getProperty("os.arch").lowercase().trim()
-
-    val osName = when {
-        os.isLinux -> "linux"
-        os.isMacOsX -> "macos"
-        os.isWindows -> "windows"
-        else -> error("Unsupported OS: ${os.name}")
-    }
-
-    val archName = when {
-        arch == "amd64" || arch == "x86_64" -> {
-            if (os.isWindows) "x86_64" else "x86-64"
-        }
-        arch == "aarch64" || arch == "arm64" -> "arm64"
-        arch.startsWith("arm") -> "arm"
-        else -> error("Unsupported Architecture: $arch")
-    }
-
-    "${osName}_${archName}"
-}
-
-logger.lifecycle("Building webrtc-jni for platform: $targetPlatform")
-
-cmake {
-    toolchains {
-        when (targetPlatform) {
-            "linux_x86-64" -> {
-                register(targetPlatform) {
-                    operatingSystem.set(OperatingSystem.LINUX)
-                    architecture.set("x86_64")
-                    toolchainFile.set(file("src/main/cpp/toolchain/x86_64-linux-clang.cmake"))
-                }
-            }
-            "linux_arm64" -> {
-                register(targetPlatform) {
-                    operatingSystem.set(OperatingSystem.LINUX)
-                    architecture.set("aarch64")
-                    toolchainFile.set(file("src/main/cpp/toolchain/aarch64-linux-clang.cmake"))
-                }
-            }
-            "linux_arm" -> {
-                register(targetPlatform) {
-                    operatingSystem.set(OperatingSystem.LINUX)
-                    architecture.set("arm")
-                    toolchainFile.set(file("src/main/cpp/toolchain/aarch32-linux-clang.cmake"))
-                }
-            }
-            "windows_x86_64" -> {
-                register(targetPlatform) {
-                    operatingSystem.set(OperatingSystem.WINDOWS)
-                    architecture.set("x86_64")
-                    generator.set("Visual Studio 17 2022")
-                    toolchainFile.set(file("src/main/cpp/toolchain/x86_64-windows-clang.cmake"))
-                }
-            }
-            "macos_x86-64" -> {
-                register(targetPlatform) {
-                    operatingSystem.set(OperatingSystem.MAC_OS)
-                    architecture.set("x86_64")
-                    toolchainFile.set(file("src/main/cpp/toolchain/x86_64-macos-cross.cmake"))
-                }
-            }
-            "macos_arm64" -> {
-                register(targetPlatform) {
-                    operatingSystem.set(OperatingSystem.MAC_OS)
-                    architecture.set("aarch64")
-                    toolchainFile.set(file("src/main/cpp/toolchain/aarch64-macos-clang.cmake"))
-                }
-            }
-            else -> {
-                error("Unsupported target platform: $targetPlatform")
-            }
-        }
-    }
-
-    libraries {
-        register("webrtc-java") {
-            sources.from(fileTree("src/main/cpp") {
-                include("**/*.cpp")
-                include("**/*.h")
-            })
-            
-            if (targetPlatform != "host") {
-                toolchains.add(targetPlatform)
-            } else {
-                toolchains.add("host")
-            }
-        }
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
-val nativeJar by tasks.registering(Jar::class) {
-    val toolchainPart = targetPlatform.replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() }
+val currentOs = OperatingSystem.current()
+val rawArch = System.getProperty("os.arch").lowercase().trim()
+
+val osFamily = when {
+    currentOs.isLinux -> "linux"
+    currentOs.isMacOsX -> "macos"
+    currentOs.isWindows -> "windows"
+    else -> error("Unsupported OS: ${currentOs.name}")
+}
+
+val osArch = when {
+    rawArch == "amd64" || rawArch == "x86_64" || rawArch == "x86-64" -> "x86_64"
+    rawArch == "aarch64" || rawArch == "arm64" -> "aarch64"
+    rawArch.startsWith("arm") -> "aarch32"
+    else -> error("Unsupported Architecture: $rawArch")
+}
+
+val targetPlatform = (project.findProperty("platform") as? String) ?: "$osFamily-$osArch"
+val platformClassifier = targetPlatform.replace("_", "-") 
+
+logger.lifecycle("Configuring webrtc-jni for Platform: $targetPlatform")
+
+val toolchainFile = file("src/main/cpp/toolchain").resolve(
+    when {
+        targetPlatform == "linux-x86_64"   -> "x86_64-linux-clang.cmake"
+        targetPlatform == "linux-aarch64"  -> "aarch64-linux-clang.cmake"
+        targetPlatform == "linux-aarch32"  -> "aarch32-linux-clang.cmake"
+        targetPlatform == "windows-x86_64" -> "x86_64-windows-clang.cmake"
+        targetPlatform == "macos-x86_64"   -> "x86_64-macos-cross.cmake"
+        targetPlatform == "macos-aarch64"  -> "aarch64-macos-clang.cmake"
+        else -> "unknown-toolchain.cmake"
+    }
+)
+
+val cmakeBuildDir = layout.buildDirectory.dir("cmake/$targetPlatform")
+
+val configureNative by tasks.registering(Exec::class) {
+    group = "build"
+    workingDir = file("src/main/cpp")
     
-    dependsOn("cmakeAssemble${toolchainPart}Release")
+    doFirst {
+        cmakeBuildDir.get().asFile.mkdirs()
+    }
 
-    archiveBaseName.set("webrtc-java")
+    commandLine("cmake")
+    args("-S", ".", "-B", cmakeBuildDir.get().asFile.absolutePath)
+    args("-DCMAKE_BUILD_TYPE=Release")
+
+    if (toolchainFile.exists()) {
+        args("-DWEBRTC_TOOLCHAIN_FILE=${toolchainFile.absolutePath}")
+    }
     
-    val classifier = targetPlatform.replace("_", "-")
-    archiveClassifier.set(classifier)
+    args("-DOUTPUT_NAME_SUFFIX=$targetPlatform")
+    args("-DCMAKE_EXPORT_COMPILE_COMMANDS=1")
+}
 
-    from(layout.buildDirectory.dir("cmake/$targetPlatform/Release")) {
+val buildNative by tasks.registering(Exec::class) {
+    group = "build"
+    dependsOn(configureNative)
+    
+    commandLine("cmake")
+    args("--build", cmakeBuildDir.get().asFile.absolutePath)
+    args("--config", "Release")
+    
+    if (!currentOs.isWindows) {
+        args("-j", Runtime.getRuntime().availableProcessors())
+    }
+}
+
+val copyNativeLibs by tasks.registering(Copy::class) {
+    dependsOn(buildNative)
+    
+    from(fileTree(cmakeBuildDir).matching {
         include("**/*.so", "**/*.dll", "**/*.dylib")
+        exclude("**/*.lib", "**/*.exp", "**/obj/**", "**/CMakeFiles/**")
+    })
+    
+    into(layout.buildDirectory.dir("resources/main"))
+    
+    rename { filename ->
+        if (filename.contains("webrtc-java")) {
+            val ext = if (filename.endsWith(".dll")) "dll" else if (filename.endsWith(".dylib")) "dylib" else "so"
+            val prefix = if (ext == "dll") "" else "lib"
+            "${prefix}webrtc-java-${targetPlatform}.${ext}"
+        } else {
+            filename
+        }
     }
     
-    destinationDirectory.set(layout.buildDirectory.dir("libs"))
+    eachFile { relativePath = RelativePath(true, name) }
 }
 
-artifacts {
-    add("archives", nativeJar)
-    add("default", nativeJar)
+tasks.named("processResources") {
+    dependsOn(copyNativeLibs)
 }
 
-tasks.named("assemble") {
-    dependsOn(nativeJar)
+tasks.named<Jar>("jar") {
+    archiveBaseName.set("webrtc-java")
+    archiveClassifier.set(platformClassifier)
 }
+
+tasks.withType<Javadoc> { enabled = false }

@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.nmcp)
+    `maven-publish`
+    `eclipse`
 }
 
 allprojects {
@@ -11,13 +13,13 @@ allprojects {
     }
 }
 
-nmcp {
-    publishAggregation {
+nmcpAggregation {
+    centralPortal {
         project(":webrtc")
         
         username.set(System.getenv("MAVEN_CENTRAL_USERNAME"))
         password.set(System.getenv("MAVEN_CENTRAL_PASSWORD"))
         
-        publicationType.set("AUTOMATIC")
+        publishingType.set("AUTOMATIC")
     }
 }

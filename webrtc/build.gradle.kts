@@ -18,6 +18,19 @@ configure<JavaPluginExtension> {
     withSourcesJar()
 }
 
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+    
+    jvmArgs(
+        "--add-opens=webrtc.java/dev.onvoid.webrtc=ALL-UNNAMED",
+        "--add-opens=webrtc.java/dev.onvoid.webrtc.logging=ALL-UNNAMED"
+    )
+    
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
