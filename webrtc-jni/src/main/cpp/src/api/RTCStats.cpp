@@ -25,7 +25,6 @@
 
 #include "api/stats/attribute.h"
 #include "rtc_base/logging.h"
-#include "rtc_base/string_encode.h"
 
 #include <map>
 #include <string>

@@ -24,8 +24,6 @@
 
 #include "api/data_channel_interface.h"
 
-#include <memory>
-
 JNIEXPORT void JNICALL Java_dev_kastle_webrtc_RTCDataChannel_registerObserver
 (JNIEnv * env, jobject caller, jobject jObserver)
 {

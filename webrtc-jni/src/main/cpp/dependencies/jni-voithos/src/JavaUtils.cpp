@@ -5,14 +5,11 @@
  * found in the LICENSE file in the root of the source tree.
  */
 
-#include "Exception.h"
 #include "JavaUtils.h"
 #include "JavaClassLoader.h"
 #include "JavaContext.h"
 #include "JavaError.h"
-#include "JavaIterable.h"
 #include "JavaIOException.h"
-#include "JavaString.h"
 #include "JavaThreadEnv.h"
 #include "JavaWrappedException.h"
 

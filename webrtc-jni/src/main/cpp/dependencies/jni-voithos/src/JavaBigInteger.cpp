@@ -8,7 +8,6 @@
 #include "JavaArray.h"
 #include "JavaBigInteger.h"
 #include "JavaClasses.h"
-#include "JavaObject.h"
 #include "JavaString.h"
 #include "JavaUtils.h"
 

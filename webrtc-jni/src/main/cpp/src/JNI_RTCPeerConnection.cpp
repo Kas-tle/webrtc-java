@@ -27,10 +27,7 @@
 #include "api/WebRTCUtils.h"
 #include "JavaArray.h"
 #include "JavaEnums.h"
-#include "JavaError.h"
 #include "JavaFactories.h"
-#include "JavaIterable.h"
-#include "JavaList.h"
 #include "JavaNullPointerException.h"
 #include "JavaRef.h"
 #include "JavaRuntimeException.h"
@@ -40,7 +37,6 @@
 #include "api/peer_connection_interface.h"
 
 #include <string>
-#include <vector>
 
 JNIEXPORT jobjectArray JNICALL Java_dev_kastle_webrtc_RTCPeerConnection_getSenders
 (JNIEnv * env, jobject caller)

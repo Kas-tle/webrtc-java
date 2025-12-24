@@ -8,13 +8,11 @@
 #ifndef JNI_JAVA_UTILS_H_
 #define JNI_JAVA_UTILS_H_
 
-#include "JavaNullPointerException.h"
+#include "JavaNullPointerException.h" // IWYU pragma: keep
 
-#include <functional>
 #include <jni.h>
 #include <memory>
 #include <string>
-#include <vector>
 
 
 #define CHECK_HANDLE(handle)															\

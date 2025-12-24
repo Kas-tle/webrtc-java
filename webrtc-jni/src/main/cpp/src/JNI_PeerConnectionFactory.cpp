@@ -23,8 +23,6 @@
 #include "JavaRuntimeException.h"
 #include "JavaUtils.h"
 
-#include "api/create_peerconnection_factory.h"
-
 JNIEXPORT void JNICALL Java_dev_kastle_webrtc_PeerConnectionFactory_initialize
 (JNIEnv * env, jobject caller)
 {

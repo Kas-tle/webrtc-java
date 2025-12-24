@@ -15,7 +15,6 @@
  */
 
 #include "api/RTCDataChannelObserver.h"
-#include "JavaFactories.h"
 #include "JavaUtils.h"
 #include "JNI_WebRTC.h"
 

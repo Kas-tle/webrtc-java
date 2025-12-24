@@ -12,6 +12,7 @@
 
 #include "JavaArray.h"
 #include "JavaClass.h"
+#include "JavaClasses.h"
 #include "JavaRef.h"
 #include "JavaUtils.h"
 

@@ -17,7 +17,7 @@
 #include "JNI_RefCountedObject.h"
 #include "JavaUtils.h"
 
-#include "rtc_base/ref_count.h"
+#include "rtc_base/ref_count.h" // IWYU pragma: keep
 
 JNIEXPORT void JNICALL Java_dev_kastle_webrtc_internal_RefCountedObject_retain
 (JNIEnv * env, jobject caller)

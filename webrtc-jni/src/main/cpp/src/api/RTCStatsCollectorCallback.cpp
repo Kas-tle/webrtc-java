@@ -16,7 +16,6 @@
 
 #include "api/RTCStatsCollectorCallback.h"
 #include "api/RTCStatsReport.h"
-#include "api/WebRTCUtils.h"
 #include "JNI_WebRTC.h"
 
 namespace jni

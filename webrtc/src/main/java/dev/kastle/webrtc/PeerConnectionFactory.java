@@ -37,13 +37,10 @@ public class PeerConnectionFactory extends DisposableNativeObject {
 	}
 
 
-	@SuppressWarnings("unused")
 	private long networkThreadHandle;
 
-	@SuppressWarnings("unused")
 	private long signalingThreadHandle;
 
-	@SuppressWarnings("unused")
 	private long workerThreadHandle;
 
 

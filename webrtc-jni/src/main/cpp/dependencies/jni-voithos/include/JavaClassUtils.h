@@ -9,6 +9,7 @@
 #define JNI_JAVA_CLASS_UTILS_H_
 
 #include "JavaRef.h"
+#include "JavaClass.h"
 
 #include <jni.h>
 #include <string>

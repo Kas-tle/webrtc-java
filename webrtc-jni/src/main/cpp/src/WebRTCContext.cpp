@@ -15,7 +15,6 @@
  */
 
 #include "WebRTCContext.h"
-#include "api/DataBufferFactory.h"
 #include "api/RTCStats.h"
 #include "Exception.h"
 #include "JavaClassLoader.h"
@@ -28,8 +27,6 @@
 #include "api/environment/environment_factory.h"
 #include "api/peer_connection_interface.h"
 #include "rtc_base/ssl_adapter.h"
-
-#include <memory>
 
 namespace jni
 {

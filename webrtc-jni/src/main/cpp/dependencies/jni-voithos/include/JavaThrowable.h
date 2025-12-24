@@ -13,8 +13,6 @@
 
 #include <jni.h>
 #include <string>
-#include <typeindex>
-#include <unordered_map>
 
 namespace jni
 {

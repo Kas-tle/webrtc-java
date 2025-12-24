@@ -21,7 +21,6 @@
 #include "api/environment/environment.h"
 
 #include <jni.h>
-#include <memory>
 
 namespace jni
 {

@@ -23,8 +23,6 @@
 
 #include "rtc_base/logging.h"
 
-#include <memory>
-
 JNIEXPORT void JNICALL Java_dev_kastle_webrtc_logging_Logging_addLogSink
 (JNIEnv * env, jclass caller, jobject jseverity, jobject jsink)
 {

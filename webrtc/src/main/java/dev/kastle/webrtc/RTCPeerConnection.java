@@ -31,7 +31,6 @@ public class RTCPeerConnection extends NativeObject {
 	 * The PeerConnection doesn't take ownership of the observer. When the
 	 * PeerConnection is closed the observer will be disposed using this handle.
 	 */
-	@SuppressWarnings("unused")
 	private long observerHandle;
 
 

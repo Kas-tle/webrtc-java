@@ -17,7 +17,6 @@
 #include "api/PeerConnectionObserver.h"
 #include "api/RTCIceCandidate.h"
 #include "api/RTCPeerConnectionIceErrorEvent.h"
-#include "api/WebRTCUtils.h"
 #include "Exception.h"
 #include "JavaArray.h"
 #include "JavaClasses.h"

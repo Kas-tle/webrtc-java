@@ -17,7 +17,6 @@
 #include "api/RTCPeerConnectionIceErrorEvent.h"
 #include "JavaClasses.h"
 #include "JavaString.h"
-#include "JavaObject.h"
 #include "JavaPrimitive.h"
 #include "JavaUtils.h"
 #include "JNI_WebRTC.h"

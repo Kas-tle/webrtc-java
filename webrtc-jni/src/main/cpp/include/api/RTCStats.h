@@ -20,7 +20,7 @@
 #include "JavaClass.h"
 #include "JavaRef.h"
 
-#include "api/stats/rtc_stats_report.h"
+#include "api/stats/rtc_stats.h"
 
 #include <jni.h>
 
