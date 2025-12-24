@@ -101,7 +101,7 @@ jobs:
           mvn release:prepare -DskipTests -DpushChanges=false -DdevelopmentVersion=${{ github.event.inputs.developmentVersion }}
           
           # Get the release version from the release.properties file
-          RELEASE_VERSION=$(grep "project.rel.dev.onvoid.webrtc\\\:webrtc-java=" release.properties | cut -d'=' -f2)
+          RELEASE_VERSION=$(grep "project.rel.dev.kastle.webrtc\\\:webrtc-java=" release.properties | cut -d'=' -f2)
           echo "Extracted release version from release.properties: $RELEASE_VERSION"
           
           # Update versions.ts file

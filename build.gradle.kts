@@ -5,8 +5,8 @@ plugins {
 }
 
 allprojects {
-    group = "dev.onvoid.webrtc"
-    version = "0.15.0-SNAPSHOT"
+    group = "dev.kastle.webrtc"
+    version = rootProject.property("version") as String
 
     repositories {
         mavenCentral()

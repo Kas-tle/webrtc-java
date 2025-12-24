@@ -2,7 +2,7 @@ module webrtc.java {
 
 	requires java.desktop;
 
-	exports dev.onvoid.webrtc;
-	exports dev.onvoid.webrtc.logging;
+	exports dev.kastle.webrtc;
+	exports dev.kastle.webrtc.logging;
     
 }

@@ -25,7 +25,7 @@
 
 #include <memory>
 
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_logging_Logging_addLogSink
+JNIEXPORT void JNICALL Java_dev_kastle_webrtc_logging_Logging_addLogSink
 (JNIEnv * env, jclass caller, jobject jseverity, jobject jsink)
 {
 	try {
@@ -38,7 +38,7 @@ JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_logging_Logging_addLogSink
 	}
 }
 
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_logging_Logging_log
+JNIEXPORT void JNICALL Java_dev_kastle_webrtc_logging_Logging_log
 (JNIEnv * env, jclass caller, jobject jseverity, jstring jmessage)
 {
 	std::string message = jni::JavaString::toNative(env, jni::JavaLocalRef<jstring>(env, jmessage));
@@ -48,7 +48,7 @@ JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_logging_Logging_log
 	RTC_LOG_V(severity) << message;
 }
 
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_logging_Logging_logToDebug
+JNIEXPORT void JNICALL Java_dev_kastle_webrtc_logging_Logging_logToDebug
 (JNIEnv * env, jclass caller, jobject jseverity)
 {
 	int rtcSeverity = jni::JavaEnums::toNative<webrtc::LoggingSeverity>(env, jseverity);
@@ -58,13 +58,13 @@ JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_logging_Logging_logToDebug
 	}
 }
 
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_logging_Logging_logThreads
+JNIEXPORT void JNICALL Java_dev_kastle_webrtc_logging_Logging_logThreads
 (JNIEnv * env, jclass caller, jboolean enable)
 {
 	webrtc::LogMessage::LogThreads(static_cast<bool>(enable));
 }
 
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_logging_Logging_logTimestamps
+JNIEXPORT void JNICALL Java_dev_kastle_webrtc_logging_Logging_logTimestamps
 (JNIEnv * env, jclass caller, jboolean enable)
 {
 	webrtc::LogMessage::LogTimestamps(static_cast<bool>(enable));

@@ -19,7 +19,7 @@
 
 #include "rtc_base/ref_count.h"
 
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_internal_RefCountedObject_retain
+JNIEXPORT void JNICALL Java_dev_kastle_webrtc_internal_RefCountedObject_retain
 (JNIEnv * env, jobject caller)
 {
 	webrtc::RefCountInterface * ref = GetHandle<webrtc::RefCountInterface>(env, caller);
@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_internal_RefCountedObject_retain
 	ref->AddRef();
 }
 
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_internal_RefCountedObject_release
+JNIEXPORT void JNICALL Java_dev_kastle_webrtc_internal_RefCountedObject_release
 (JNIEnv * env, jobject caller)
 {
 	webrtc::RefCountInterface * ref = GetHandle<webrtc::RefCountInterface>(env, caller);

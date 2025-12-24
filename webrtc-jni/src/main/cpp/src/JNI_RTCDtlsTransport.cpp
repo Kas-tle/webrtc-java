@@ -25,7 +25,7 @@
 
 #include "api/dtls_transport_interface.h"
 
-JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_RTCDtlsTransport_getIceTransport
+JNIEXPORT jobject JNICALL Java_dev_kastle_webrtc_RTCDtlsTransport_getIceTransport
 (JNIEnv * env, jobject caller)
 {
 	webrtc::DtlsTransportInterface * transport = GetHandle<webrtc::DtlsTransportInterface>(env, caller);
@@ -36,7 +36,7 @@ JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_RTCDtlsTransport_getIceTranspor
 	return jni::JavaFactories::create(env, iceTransport.get()).release();
 }
 
-JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_RTCDtlsTransport_getState
+JNIEXPORT jobject JNICALL Java_dev_kastle_webrtc_RTCDtlsTransport_getState
 (JNIEnv * env, jobject caller)
 {
 	webrtc::DtlsTransportInterface * transport = GetHandle<webrtc::DtlsTransportInterface>(env, caller);
@@ -47,7 +47,7 @@ JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_RTCDtlsTransport_getState
 	return jni::JavaEnums::toJava(env, info.state()).release();
 }
 
-JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_RTCDtlsTransport_getRemoteCertificates
+JNIEXPORT jobject JNICALL Java_dev_kastle_webrtc_RTCDtlsTransport_getRemoteCertificates
 (JNIEnv * env, jobject caller)
 {
 	webrtc::DtlsTransportInterface * transport = GetHandle<webrtc::DtlsTransportInterface>(env, caller);
@@ -70,7 +70,7 @@ JNIEXPORT jobject JNICALL Java_dev_onvoid_webrtc_RTCDtlsTransport_getRemoteCerti
 	return certificates.listObject().release();
 }
 
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCDtlsTransport_registerObserver
+JNIEXPORT void JNICALL Java_dev_kastle_webrtc_RTCDtlsTransport_registerObserver
 (JNIEnv * env, jobject caller, jobject observer)
 {
 	webrtc::DtlsTransportInterface * transport = GetHandle<webrtc::DtlsTransportInterface>(env, caller);
@@ -79,7 +79,7 @@ JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCDtlsTransport_registerObserver
 	transport->RegisterObserver(new jni::RTCDtlsTransportObserver(env, jni::JavaGlobalRef<jobject>(env, observer)));
 }
 
-JNIEXPORT void JNICALL Java_dev_onvoid_webrtc_RTCDtlsTransport_unregisterObserver
+JNIEXPORT void JNICALL Java_dev_kastle_webrtc_RTCDtlsTransport_unregisterObserver
 (JNIEnv * env, jobject caller)
 {
 	webrtc::DtlsTransportInterface * transport = GetHandle<webrtc::DtlsTransportInterface>(env, caller);

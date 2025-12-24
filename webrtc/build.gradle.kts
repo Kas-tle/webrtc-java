@@ -22,8 +22,8 @@ tasks.named<Test>("test") {
     useJUnitPlatform()
     
     jvmArgs(
-        "--add-opens=webrtc.java/dev.onvoid.webrtc=ALL-UNNAMED",
-        "--add-opens=webrtc.java/dev.onvoid.webrtc.logging=ALL-UNNAMED"
+        "--add-opens=webrtc.java/dev.kastle.webrtc=ALL-UNNAMED",
+        "--add-opens=webrtc.java/dev.kastle.webrtc.logging=ALL-UNNAMED"
     )
     
     testLogging {

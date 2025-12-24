@@ -27,7 +27,7 @@ val osArch = when {
     else -> error("Unsupported Architecture: $rawArch")
 }
 
-val targetPlatform = (project.findProperty("platform") as? String) ?: "$osFamily-$osArch"
+val targetPlatform = (System.getenv("WEBRTC_PLATFORM") as? String) ?: "$osFamily-$osArch"
 val platformClassifier = targetPlatform.replace("_", "-") 
 
 logger.lifecycle("Configuring webrtc-jni for Platform: $targetPlatform")
@@ -62,6 +62,10 @@ val configureNative by tasks.registering(Exec::class) {
         args("-DWEBRTC_TOOLCHAIN_FILE=${toolchainFile.absolutePath}")
     }
     
+    val webrtcBranch = rootProject.property("webrtc.branch") as String? ?: "master"
+    logger.lifecycle("Using WebRTC Branch: $webrtcBranch")
+
+    args("-DWEBRTC_BRANCH=$webrtcBranch")
     args("-DOUTPUT_NAME_SUFFIX=$targetPlatform")
     args("-DCMAKE_EXPORT_COMPILE_COMMANDS=1")
 }
