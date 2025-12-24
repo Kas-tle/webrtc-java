@@ -18,8 +18,6 @@ package dev.onvoid.webrtc;
 
 import dev.onvoid.webrtc.internal.NativeObject;
 
-import java.util.List;
-
 /**
  * The RTCPeerConnection represents a WebRTC connection between the local
  * computer and a remote peer. Communications are coordinated by the exchange of
