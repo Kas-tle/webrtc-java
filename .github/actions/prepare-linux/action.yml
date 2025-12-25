@@ -1,6 +1,6 @@
-name: 'Prepare Linux Build'
+name: "Prepare Linux Build"
 
-description: 'Frees up disk space and installs required packages for Linux builds.'
+description: "Frees up disk space and installs required packages for Linux builds."
 
 runs:
   using: "composite"
@@ -53,7 +53,7 @@ runs:
       if: matrix.platform.name == 'linux_arm'
       run: |
         sudo apt install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-        
+
         sudo mkdir /opt/sysroot
         python3 webrtc-jni/src/main/cpp/dependencies/webrtc/linux/sysroot/install-sysroot.py --arch=armhf
         sudo mv webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian* /opt/sysroot/
@@ -63,7 +63,7 @@ runs:
       if: matrix.platform.name == 'linux_arm64'
       run: |
         sudo apt install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-        
+
         sudo mkdir /opt/sysroot
         python3 webrtc-jni/src/main/cpp/dependencies/webrtc/linux/sysroot/install-sysroot.py --arch=arm64
         sudo mv webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian* /opt/sysroot/

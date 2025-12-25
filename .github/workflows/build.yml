@@ -3,21 +3,19 @@ name: Build
 on:
   push:
     branches:
-      - main
-    paths:
-      - "**.cpp"
-      - "**.h"
-      - "**.java"
-      - "**/CMakeLists.txt"
+        - '**'
+    paths-ignore:
+      - '.github/ISSUE_TEMPLATE/*.yml'
+      - '.gitignore'
+      - 'CONTRIBUTING.md'
+      - 'LICENSE'
+      - 'NOTICE'
+      - 'README.md'
 
   pull_request:
-    branches:
-      - main
-
   workflow_dispatch:
 
 env:
-  WEBRTC_CACHE_BRANCH: 7339
   WEBRTC_CHECKOUT_FOLDER: ~/webrtc
 
 jobs:
@@ -32,20 +30,19 @@ jobs:
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # https://github.com/actions/checkout/releases/latest
 
       - id: prepare
         name: Prepare build
         uses: ./.github/actions/prepare-windows
 
-      - id: maven-build
-        name: Maven build
+      - id: gradle-build
+        name: Gradle build
         uses: ./.github/actions/build
         with:
           java-version: ${{ matrix.java }}
           platform-name: ${{ matrix.platform.name }}
-          maven-username: ${{ secrets.MAVEN_USERNAME }}
-          maven-password: ${{ secrets.MAVEN_TOKEN }}
 
   build-linux:
     strategy:
@@ -62,20 +59,19 @@ jobs:
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # https://github.com/actions/checkout/releases/latest
 
       - id: prepare
         name: Prepare build
         uses: ./.github/actions/prepare-linux
 
-      - id: maven-build
-        name: Maven build
+      - id: gradle-build
+        name: Gradle build
         uses: ./.github/actions/build
         with:
           java-version: ${{ matrix.java }}
           platform-name: ${{ matrix.platform.name }}
-          maven-username: ${{ secrets.MAVEN_USERNAME }}
-          maven-password: ${{ secrets.MAVEN_TOKEN }}
 
   build-macos:
     strategy:
@@ -83,35 +79,23 @@ jobs:
       matrix:
         platform:
           - name: macos_x86-64
-            runs-on: macos-14
+            runs-on: macos-15-intel
           - name: macos_arm64
             runs-on: macos-14
         java: [17]
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # https://github.com/actions/checkout/releases/latest
 
       - id: prepare-build
         name: Prepare build
         uses: ./.github/actions/prepare-macos
 
-      - id: maven-build-arm64
-        name: Maven build - Apple Silicon
-        if: matrix.platform.name == 'macos_arm64'
+      - id: gradle-build
+        name: Gradle build
         uses: ./.github/actions/build
         with:
           java-version: ${{ matrix.java }}
           platform-name: ${{ matrix.platform.name }}
-          maven-username: ${{ secrets.MAVEN_USERNAME }}
-          maven-password: ${{ secrets.MAVEN_TOKEN }}
-
-      - id: maven-build-x86_64
-        name: Maven build - Intel
-        if: matrix.platform.name == 'macos_x86-64'
-        uses: ./.github/actions/build-macos-x86_64
-        with:
-          java-version: ${{ matrix.java }}
-          platform-name: ${{ matrix.platform.name }}
-          maven-username: ${{ secrets.MAVEN_USERNAME }}
-          maven-password: ${{ secrets.MAVEN_TOKEN }}

@@ -68,7 +68,7 @@ val configureNative by tasks.registering(Exec::class) {
         args("-DWEBRTC_TOOLCHAIN_FILE=${toolchainFile.absolutePath}")
     }
     
-    val webrtcBranch = rootProject.property("webrtc.branch") as String? ?: "master"
+    val webrtcBranch = project.property("webrtc.branch") as String? ?: "master"
     logger.lifecycle("Using WebRTC Branch: $webrtcBranch")
 
     args("-DWEBRTC_BRANCH=$webrtcBranch")
