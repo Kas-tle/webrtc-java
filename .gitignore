@@ -18,6 +18,7 @@
 # Gradle
 .gradle
 **/build/
+!.github/actions/build/
 !src/**/build/
 gradle-app.setting
 !gradle-wrapper.jar
