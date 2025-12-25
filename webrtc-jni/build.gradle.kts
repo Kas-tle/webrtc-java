@@ -11,24 +11,30 @@ java {
 }
 
 val currentOs = OperatingSystem.current()
-val rawArch = System.getProperty("os.arch").lowercase().trim()
 
-val osFamily = when {
-    currentOs.isLinux -> "linux"
-    currentOs.isMacOsX -> "macos"
-    currentOs.isWindows -> "windows"
-    else -> error("Unsupported OS: ${currentOs.name}")
+var targetPlatform = System.getenv("WEBRTC_PLATFORM") as? String
+
+if (targetPlatform == null) {
+    val rawArch = System.getProperty("os.arch").lowercase().trim()
+
+    val osFamily = when {
+        currentOs.isLinux -> "linux"
+        currentOs.isMacOsX -> "macos"
+        currentOs.isWindows -> "windows"
+        else -> error("Unsupported OS: ${currentOs.name}")
+    }
+
+    val osArch = when {
+        rawArch == "amd64" || rawArch == "x86_64" || rawArch == "x86-64" -> "x86_64"
+        rawArch == "aarch64" || rawArch == "arm64" -> "aarch64"
+        rawArch.startsWith("arm") -> "aarch32"
+        else -> error("Unsupported Architecture: $rawArch")
+    }
+
+    targetPlatform = "$osFamily-$osArch"
 }
 
-val osArch = when {
-    rawArch == "amd64" || rawArch == "x86_64" || rawArch == "x86-64" -> "x86_64"
-    rawArch == "aarch64" || rawArch == "arm64" -> "aarch64"
-    rawArch.startsWith("arm") -> "aarch32"
-    else -> error("Unsupported Architecture: $rawArch")
-}
-
-val targetPlatform = (System.getenv("WEBRTC_PLATFORM") as? String) ?: "$osFamily-$osArch"
-val platformClassifier = targetPlatform.replace("_", "-") 
+val platformClassifier = targetPlatform?.replace("_", "-") 
 
 logger.lifecycle("Configuring webrtc-jni for Platform: $targetPlatform")
 

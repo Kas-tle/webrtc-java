@@ -16,15 +16,11 @@ configure<JavaPluginExtension> {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
     withJavadocJar()
     withSourcesJar()
+    modularity.inferModulePath.set(true)
 }
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
-    
-    jvmArgs(
-        "--add-opens=webrtc.java/dev.kastle.webrtc=ALL-UNNAMED",
-        "--add-opens=webrtc.java/dev.kastle.webrtc.logging=ALL-UNNAMED"
-    )
     
     testLogging {
         events("passed", "skipped", "failed")
