@@ -34,8 +34,6 @@ if (targetPlatform == null) {
     targetPlatform = "$osFamily-$osArch"
 }
 
-val platformClassifier = targetPlatform?.replace("_", "-") 
-
 logger.lifecycle("Configuring webrtc-jni for Platform: $targetPlatform")
 
 val toolchainFile = file("src/main/cpp/toolchain").resolve(
@@ -121,7 +119,7 @@ tasks.named("processResources") {
 
 tasks.named<Jar>("jar") {
     archiveBaseName.set("webrtc-java")
-    archiveClassifier.set(platformClassifier)
+    archiveClassifier.set(targetPlatform)
 }
 
 tasks.withType<Javadoc> { enabled = false }

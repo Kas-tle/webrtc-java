@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - name: windows_x86_64
+          - name: windows-x86_64
             runs-on: windows-2022
         java: [17]
     runs-on: ${{ matrix.platform.runs-on }}
@@ -49,11 +49,11 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - name: linux_arm
+          - name: linux-aarch32
             runs-on: ubuntu-22.04
-          - name: linux_arm64
+          - name: linux-aarch64
             runs-on: ubuntu-22.04
-          - name: linux_x86-64
+          - name: linux-x86_64
             runs-on: ubuntu-22.04
         java: [17]
     runs-on: ${{ matrix.platform.runs-on }}
@@ -78,9 +78,9 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - name: macos_x86-64
+          - name: macos-x86_64
             runs-on: macos-15-intel
-          - name: macos_arm64
+          - name: macos-aarch64
             runs-on: macos-14
         java: [17]
     runs-on: ${{ matrix.platform.runs-on }}
