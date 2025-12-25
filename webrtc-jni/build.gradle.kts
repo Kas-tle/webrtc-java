@@ -65,7 +65,10 @@ val configureNative by tasks.registering(Exec::class) {
     args("-DCMAKE_BUILD_TYPE=Release")
 
     if (toolchainFile.exists()) {
+        logger.lifecycle("Using Toolchain file: ${toolchainFile.absolutePath}")
         args("-DWEBRTC_TOOLCHAIN_FILE=${toolchainFile.absolutePath}")
+    } else {
+        logger.warn("Toolchain file not found for platform $targetPlatform: ${toolchainFile.absolutePath}")
     }
     
     val webrtcBranch = project.property("webrtc.branch") as String? ?: "master"
