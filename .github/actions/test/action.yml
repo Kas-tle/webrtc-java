@@ -35,6 +35,6 @@ runs:
 
     - name: Test
       run: |
-        JNI_PATH=$(find artifacts -name "*.jar")
+        JNI_PATH=$(find ~+/artifacts -name "*.jar")
         ./gradlew test -PprebuiltJniPath="$JNI_PATH"
       shell: bash
