@@ -26,11 +26,12 @@ configure<JavaPluginExtension> {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
     withJavadocJar()
     withSourcesJar()
-    modularity.inferModulePath.set(false)
 }
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+    
+    modularity.inferModulePath.set(false)
     
     testLogging {
         events("passed", "skipped", "failed")

@@ -182,7 +182,7 @@ jobs:
             runs-on: macos-15
           - name: macos-26_macos-aarch64
             artifact-name: macos-aarch64
-            runs-on: macos-26-intel
+            runs-on: macos-26
         java: [17]
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
