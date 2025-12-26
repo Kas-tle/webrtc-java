@@ -12,14 +12,28 @@ inputs:
     description: "The target platform."
     required: true
 
+  architecture:
+    description: "The target architecture."
+    required: false
+    default: ""
+
 runs:
   using: "composite"
   steps:
+    - name: Install 32-bit ARM libraries
+      if: inputs.architecture == 'armv7'
+      run: |
+        sudo dpkg --add-architecture armhf
+        sudo apt-get update
+        sudo apt-get install -y libc6:armhf libstdc++6:armhf
+      shell: bash
+
     - uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
       # https://github.com/actions/setup-java/releases/latest
       with:
         distribution: "liberica"
         java-version: ${{ inputs.java-version }}
+        architecture: ${{ inputs.architecture }}
 
     - uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2
       # https://github.com/gradle/actions/releases/latest

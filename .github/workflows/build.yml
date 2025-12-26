@@ -109,21 +109,27 @@ jobs:
           - name: ubuntu-22.04-arm_linux-aarch32
             artifact-name: linux-aarch32
             runs-on: ubuntu-22.04-arm
+            java-arch: armv7
           - name: ubuntu-24.04-arm_linux-aarch32
             artifact-name: linux-aarch32
             runs-on: ubuntu-24.04-arm
+            java-arch: armv7
           - name: ubuntu-22.04-arm_linux-aarch64
             artifact-name: linux-aarch64
             runs-on: ubuntu-22.04-arm
+            java-arch: aarch64
           - name: ubuntu-24.04-arm_linux-aarch64
             artifact-name: linux-aarch64
             runs-on: ubuntu-24.04-arm
+            java-arch: aarch64
           - name: ubuntu-22.04_linux-x86_64
             artifact-name: linux-x86_64
             runs-on: ubuntu-22.04
+            java-arch: x64
           - name: ubuntu-24.04_linux-x86_64
             artifact-name: linux-x86_64
             runs-on: ubuntu-24.04
+            java-arch: x64
         java: [17]
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
@@ -137,6 +143,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           platform-name: ${{ matrix.platform.artifact-name }}
+          architecture: ${{ matrix.platform.java-arch }}
 
   build-macos:
     strategy:
