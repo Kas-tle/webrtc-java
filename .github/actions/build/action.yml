@@ -15,18 +15,17 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Create webrtc folder in home and save absolute path
-      id: set-webrtc-path
+    - name: Create WebRTC checkout folder
       run: |
         mkdir -p $HOME/webrtc
-        echo "WEBRTC_PATH=$HOME/webrtc" >> $GITHUB_ENV
+        echo "WEBRTC_CHECKOUT_FOLDER=$HOME/webrtc" >> $GITHUB_ENV
       shell: bash
 
     - name: Set up WebRTC cache
       uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb
       # https://github.com/actions/cache/releases/latest
       with:
-        path: ${{ steps.set-webrtc-path.outputs.WEBRTC_PATH }}/build
+        path: ${{ env.WEBRTC_CHECKOUT_FOLDER }}/build
         key: webrtc-${{ hashFiles('webrtc-jni/gradle.properties') }}-${{ inputs.platform-name }}-${{ hashFiles('webrtc-jni/src/main/cpp/dependencies/webrtc/CMakeLists.txt') }}
         restore-keys: webrtc-${{ hashFiles('webrtc-jni/gradle.properties') }}-${{ inputs.platform-name }}-
 
@@ -41,7 +40,6 @@ runs:
 
     - name: Build
       env:
-        WEBRTC_CHECKOUT_FOLDER: ${{ steps.set-webrtc-path.outputs.WEBRTC_PATH }}
         WEBRTC_PLATFORM: ${{ inputs.platform-name }}
         SKIP_TESTS: ${{ inputs.platform-name == 'linux-aarch32' || inputs.platform-name == 'linux-aarch64' || inputs.platform-name == 'macos-x86_64' }}
       run: ./gradlew build
