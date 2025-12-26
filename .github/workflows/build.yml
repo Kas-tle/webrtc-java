@@ -50,9 +50,9 @@ jobs:
       matrix:
         platform:
           - name: linux-aarch32
-            runs-on: ubuntu-22.04
+            runs-on: ubuntu-22.04-arm
           - name: linux-aarch64
-            runs-on: ubuntu-22.04
+            runs-on: ubuntu-22.04-arm
           - name: linux-x86_64
             runs-on: ubuntu-22.04
         java: [17]
