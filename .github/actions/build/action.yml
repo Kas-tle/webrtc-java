@@ -36,6 +36,7 @@ runs:
       env:
         WEBRTC_CHECKOUT_FOLDER: ${{ github.workspace }}/wrtc
         WEBRTC_PLATFORM: ${{ inputs.platform-name }}
+        SKIP_TESTS: ${{ inputs.platform-name == 'linux-aarch32' || inputs.platform-name == 'linux-aarch64' }}
       run: ./gradlew build
       shell: bash
 

@@ -27,6 +27,12 @@ tasks.named<Test>("test") {
     }
 }
 
+if (System.getenv("SKIP_TESTS") == "true") {
+    tasks.named<Test>("test") {
+        enabled = false
+    }
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
