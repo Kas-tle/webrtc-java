@@ -41,7 +41,7 @@ runs:
     - name: Build
       env:
         WEBRTC_PLATFORM: ${{ inputs.platform-name }}
-        SKIP_TESTS: ${{ inputs.platform-name == 'linux-aarch32' || inputs.platform-name == 'linux-aarch64' || inputs.platform-name == 'macos-x86_64' }}
+        SKIP_TESTS: ${{ inputs.platform-name == 'linux-aarch32' || inputs.platform-name == 'linux-aarch64' || inputs.platform-name == 'macos-x86_64' || inputs.platform-name == 'windows-aarch64' }}
       run: ./gradlew build
       shell: bash
 
