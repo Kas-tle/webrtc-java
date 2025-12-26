@@ -36,5 +36,5 @@ runs:
     - name: Test
       run: |
         JNI_PATH=$(find ~+/artifacts -name "*.jar")
-        ./gradlew test -PprebuiltJniPath="$JNI_PATH"
+        ./gradlew :webrtc:test -PprebuiltJniPath="$JNI_PATH"
       shell: bash
