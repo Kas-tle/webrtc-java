@@ -62,5 +62,8 @@ runs:
     - name: Test
       run: |
         JNI_PATH=$(find ~+/artifacts -name "*.jar")
-        ./gradlew :webrtc:test -PprebuiltJniPath="$JNI_PATH"
+        ./gradlew :webrtc:test -PprebuiltJniPath="$JNI_PATH" \
+          --no-daemon \
+          -Dorg.gradle.vfs.watch=false \
+          --stacktrace
       shell: bash
