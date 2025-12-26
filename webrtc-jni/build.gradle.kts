@@ -42,6 +42,7 @@ val toolchainFile = file("src/main/cpp/toolchain").resolve(
         targetPlatform == "linux-aarch64"  -> "aarch64-linux-clang.cmake"
         targetPlatform == "linux-aarch32"  -> "aarch32-linux-clang.cmake"
         targetPlatform == "windows-x86_64" -> "x86_64-windows-clang.cmake"
+        targetPlatform == "windows-aarch64" -> "aarch64-windows-clang.cmake"
         targetPlatform == "macos-x86_64"   -> "x86_64-macos-cross.cmake"
         targetPlatform == "macos-aarch64"  -> "aarch64-macos-clang.cmake"
         else -> "unknown-toolchain.cmake"
@@ -61,6 +62,10 @@ val configureNative by tasks.registering(Exec::class) {
     commandLine("cmake")
     args("-S", ".", "-B", cmakeBuildDir.get().asFile.absolutePath)
     args("-DCMAKE_BUILD_TYPE=Release")
+
+    if (targetPlatform == "windows-aarch64") {
+        args("-A", "ARM64")
+    }
 
     if (toolchainFile.exists()) {
         logger.lifecycle("Using Toolchain file: ${toolchainFile.absolutePath}")
