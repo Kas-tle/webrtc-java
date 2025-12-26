@@ -17,8 +17,8 @@ runs:
   steps:
     - name: Create WebRTC checkout folder
       run: |
-        mkdir -p ~/webrtc/build
-        echo "WEBRTC_CHECKOUT_FOLDER=~/webrtc" >> $GITHUB_ENV
+        mkdir -p $HOME/webrtc/build
+        echo "WEBRTC_CHECKOUT_FOLDER=$HOME/webrtc" >> $GITHUB_ENV
       shell: bash
 
     - name: Set up WebRTC cache
@@ -26,6 +26,7 @@ runs:
       # https://github.com/actions/cache/releases/latest
       with:
         path: ${{ env.WEBRTC_CHECKOUT_FOLDER }}/build
+        shell: bash
         key: webrtc-${{ hashFiles('webrtc-jni/gradle.properties') }}-${{ inputs.platform-name }}-${{ hashFiles('webrtc-jni/src/main/cpp/dependencies/webrtc/CMakeLists.txt') }}
         restore-keys: webrtc-${{ hashFiles('webrtc-jni/gradle.properties') }}-${{ inputs.platform-name }}-
 
