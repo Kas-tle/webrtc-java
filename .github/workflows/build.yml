@@ -11,12 +11,8 @@ on:
       - 'LICENSE'
       - 'NOTICE'
       - 'README.md'
-
   pull_request:
   workflow_dispatch:
-
-env:
-  WEBRTC_CHECKOUT_FOLDER: ~/webrtc
 
 jobs:
   build-windows:
