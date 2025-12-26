@@ -44,10 +44,6 @@ runs:
       run: ./gradlew build -x test
       shell: bash
 
-    - name: List WebRTC cache folder contents
-      run: find $WEBRTC_CHECKOUT_FOLDER/build -maxdepth 2
-      shell: bash
-
     - name: Archive webrtc-java
       uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
       # https://github.com/actions/upload-artifact/releases/latest

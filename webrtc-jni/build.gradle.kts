@@ -105,7 +105,7 @@ val copyNativeLibs by tasks.registering(Copy::class) {
         exclude("**/*.lib", "**/*.exp", "**/obj/**", "**/CMakeFiles/**")
     })
     
-    into(layout.buildDirectory.dir("resources/main"))
+    into(layout.buildDirectory.dir("generated/jni"))
     
     rename { filename ->
         if (filename.contains("webrtc-java")) {
@@ -120,8 +120,12 @@ val copyNativeLibs by tasks.registering(Copy::class) {
     eachFile { relativePath = RelativePath(true, name) }
 }
 
-tasks.named("processResources") {
-    dependsOn(copyNativeLibs)
+sourceSets {
+    main {
+        resources {
+            srcDir(copyNativeLibs)
+        }
+    }
 }
 
 tasks.named<Jar>("jar") {

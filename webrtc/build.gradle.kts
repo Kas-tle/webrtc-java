@@ -26,7 +26,7 @@ configure<JavaPluginExtension> {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
     withJavadocJar()
     withSourcesJar()
-    modularity.inferModulePath.set(true)
+    modularity.inferModulePath.set(false)
 }
 
 tasks.named<Test>("test") {
