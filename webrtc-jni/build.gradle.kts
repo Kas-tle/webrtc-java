@@ -14,10 +14,9 @@ val currentOs = OperatingSystem.current()
 
 var targetPlatform = System.getenv("WEBRTC_PLATFORM") as? String
 
-val hostArch = System.getProperty("os.arch").lowercase().trim()
-val isHostArm = hostArch == "aarch64" || hostArch == "arm64"
-
 if (targetPlatform == null) {
+    val rawArch = System.getProperty("os.arch").lowercase().trim()
+
     val osFamily = when {
         currentOs.isLinux -> "linux"
         currentOs.isMacOsX -> "macos"
@@ -26,21 +25,16 @@ if (targetPlatform == null) {
     }
 
     val osArch = when {
-        hostArch == "amd64" || hostArch == "x86_64" || hostArch == "x86-64" -> "x86_64"
-        isHostArm -> "aarch64"
-        hostArch.startsWith("arm") -> "aarch32"
-        else -> error("Unsupported Architecture: $hostArch")
+        rawArch == "amd64" || rawArch == "x86_64" || rawArch == "x86-64" -> "x86_64"
+        rawArch == "aarch64" || rawArch == "arm64" -> "aarch64"
+        rawArch.startsWith("arm") -> "aarch32"
+        else -> error("Unsupported Architecture: $rawArch")
     }
 
     targetPlatform = "$osFamily-$osArch"
 }
 
-val useRosetta = currentOs.isMacOsX && isHostArm && targetPlatform == "macos-x86_64"
-
 logger.lifecycle("Configuring webrtc-jni for Platform: $targetPlatform")
-if (useRosetta) {
-    logger.lifecycle("Building for x86_64 on ARM host -> Using 'arch -x86_64'")
-}
 
 val toolchainFile = file("src/main/cpp/toolchain").resolve(
     when {
@@ -64,12 +58,7 @@ val configureNative by tasks.registering(Exec::class) {
         cmakeBuildDir.get().asFile.mkdirs()
     }
 
-    if (useRosetta) {
-        commandLine("arch", "-x86_64", "cmake")
-    } else {
-        commandLine("cmake")
-    }
-
+    commandLine("cmake")
     args("-S", ".", "-B", cmakeBuildDir.get().asFile.absolutePath)
     args("-DCMAKE_BUILD_TYPE=Release")
 
@@ -92,12 +81,7 @@ val buildNative by tasks.registering(Exec::class) {
     group = "build"
     dependsOn(configureNative)
     
-    if (useRosetta) {
-        commandLine("arch", "-x86_64", "cmake")
-    } else {
-        commandLine("cmake")
-    }
-    
+    commandLine("cmake")
     args("--build", cmakeBuildDir.get().asFile.absolutePath)
     args("--config", "Release")
     
