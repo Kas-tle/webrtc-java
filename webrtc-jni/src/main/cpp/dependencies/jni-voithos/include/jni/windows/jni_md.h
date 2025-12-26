@@ -30,11 +30,6 @@
 #define JNIIMPORT __declspec(dllimport)
 #define JNICALL __stdcall
 
-#ifndef __int64
-#include <stdint.h>
-#define __int64 int64_t
-#endif
-
 typedef long jint;
 typedef __int64 jlong;
 typedef signed char jbyte;
