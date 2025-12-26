@@ -19,7 +19,7 @@ runs:
       uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb
       # https://github.com/actions/cache/releases/latest
       with:
-        path: ${{ github.workspace }}/webrtc-jni/src/main/cpp/dependencies/webrtc/webrtc-source/build
+        path: ${{ env.HOME }}/webrtc/build
         key: webrtc-${{ hashFiles('webrtc-jni/gradle.properties') }}-${{ inputs.platform-name }}-${{ hashFiles('webrtc-jni/src/main/cpp/dependencies/webrtc/CMakeLists.txt') }}
         restore-keys: webrtc-${{ hashFiles('webrtc-jni/gradle.properties') }}-${{ inputs.platform-name }}-
 
@@ -34,6 +34,7 @@ runs:
 
     - name: Build
       env:
+        WEBRTC_CHECKOUT_FOLDER: ${{ env.HOME }}/webrtc
         WEBRTC_PLATFORM: ${{ inputs.platform-name }}
       run: ./gradlew build
       shell: bash
