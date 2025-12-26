@@ -8,6 +8,7 @@ dependencies {
     val prebuiltJniPath = project.findProperty("prebuiltJniPath") as? String
     if (prebuiltJniPath != null) {
         api(files(prebuiltJniPath))
+        logger.lifecycle("Using prebuilt webrtc-jni from: $prebuiltJniPath")
     } else {
         api(project(":webrtc-jni"))
     }
