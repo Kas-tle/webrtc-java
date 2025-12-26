@@ -1,0 +1,40 @@
+name: "Gradle Test"
+
+description: "Test the platform dependent Java library"
+
+inputs:
+  java-version:
+    description: "The Java build version."
+    required: true
+    default: "17"
+
+  platform-name:
+    description: "The target platform."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
+      # https://github.com/actions/setup-java/releases/latest
+      with:
+        distribution: "temurin"
+        java-version: ${{ inputs.java-version }}
+
+    - uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2
+      # https://github.com/gradle/actions/releases/latest
+      with:
+        cache-read-only: true
+
+    - name: Download JNI Artifact
+      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+      # https://github.com/actions/download-artifact/releases/latest
+      with:
+        name: webrtc-java-jni-${{ inputs.platform-name }}
+        path: artifacts
+
+    - name: Test
+      run: |
+        JNI_PATH=$(find artifacts -name "*.jar")
+        ./gradlew test -PprebuiltJniPath="$JNI_PATH"
+      shell: bash

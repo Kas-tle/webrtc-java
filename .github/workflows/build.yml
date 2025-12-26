@@ -3,14 +3,14 @@ name: Build
 on:
   push:
     branches:
-        - '**'
+      - "**"
     paths-ignore:
-      - '.github/ISSUE_TEMPLATE/*.yml'
-      - '.gitignore'
-      - 'CONTRIBUTING.md'
-      - 'LICENSE'
-      - 'NOTICE'
-      - 'README.md'
+      - ".github/ISSUE_TEMPLATE/*.yml"
+      - ".gitignore"
+      - "CONTRIBUTING.md"
+      - "LICENSE"
+      - "NOTICE"
+      - "README.md"
   pull_request:
   workflow_dispatch:
 
@@ -38,6 +38,31 @@ jobs:
       - id: gradle-build
         name: Gradle build
         uses: ./.github/actions/build
+        with:
+          java-version: ${{ matrix.java }}
+          platform-name: ${{ matrix.platform.name }}
+
+  test-windows:
+    needs: build-windows
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: windows-x86_64
+            runs-on: [windows-2022, windows-2025]
+          - name: windows-11-arm
+            artifact-name: windows-aarch64
+            runs-on: [windows-11-arm]
+        java: [17]
+    runs-on: ${{ matrix.platform.runs-on }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # https://github.com/actions/checkout/releases/latest
+
+      - id: gradle-test
+        name: Gradle test
+        uses: ./.github/actions/test
         with:
           java-version: ${{ matrix.java }}
           platform-name: ${{ matrix.platform.name }}
@@ -71,6 +96,32 @@ jobs:
           java-version: ${{ matrix.java }}
           platform-name: ${{ matrix.platform.name }}
 
+  test-linux:
+    needs: build-linux
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: linux-aarch32
+            runs-on: [ubuntu-22.04-arm, ubuntu-24.04-arm]
+          - name: linux-aarch64
+            runs-on: [ubuntu-22.04-arm, ubuntu-24.04-arm]
+          - name: linux-x86_64
+            runs-on: [ubuntu-22.04, ubuntu-24.04]
+        java: [17]
+    runs-on: ${{ matrix.platform.runs-on }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # https://github.com/actions/checkout/releases/latest
+
+      - id: gradle-test
+        name: Gradle test
+        uses: ./.github/actions/test
+        with:
+          java-version: ${{ matrix.java }}
+          platform-name: ${{ matrix.platform.name }}
+
   build-macos:
     strategy:
       fail-fast: false
@@ -97,3 +148,28 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           platform-name: ${{ matrix.platform.name }}
+
+  test-macos:
+    needs: build-macos
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: macos-x86_64
+            runs-on: [macos-15-intel]
+          - name: macos-aarch64
+            runs-on: [macos-14, macos-15, macos-26]
+        java: [17]
+    runs-on: ${{ matrix.platform.runs-on }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        # https://github.com/actions/checkout/releases/latest
+
+      - id: gradle-test
+        name: Gradle test
+        uses: ./.github/actions/test
+        with:
+          java-version: ${{ matrix.java }}
+          platform-name: ${{ matrix.platform.name }}
+

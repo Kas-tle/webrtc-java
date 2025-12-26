@@ -5,11 +5,20 @@ plugins {
 }
 
 dependencies {
-    api(project(":webrtc-jni"))
+    val prebuiltJniPath = project.findProperty("prebuiltJniPath") as? String
+    if (prebuiltJniPath != null) {
+        api(files(prebuiltJniPath))
+    } else {
+        api(project(":webrtc-jni"))
+    }
     
     testImplementation(libs.bundles.junit)
     testRuntimeOnly(libs.junit.platform.launcher)
-    testRuntimeOnly(project(":webrtc-jni"))
+    if (prebuiltJniPath != null) {
+        testRuntimeOnly(files(prebuiltJniPath))
+    } else {
+        testRuntimeOnly(project(":webrtc-jni"))
+    }
 }
 
 configure<JavaPluginExtension> {
@@ -26,13 +35,6 @@ tasks.named<Test>("test") {
         events("passed", "skipped", "failed")
     }
 }
-
-if (System.getenv("SKIP_TESTS") == "true") {
-    tasks.named<Test>("test") {
-        enabled = false
-    }
-}
-
 publishing {
     publications {
         create<MavenPublication>("maven") {

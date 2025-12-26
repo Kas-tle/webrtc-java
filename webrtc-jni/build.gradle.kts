@@ -79,6 +79,7 @@ val configureNative by tasks.registering(Exec::class) {
 
     args("-DWEBRTC_BRANCH=$webrtcBranch")
     args("-DOUTPUT_NAME_SUFFIX=$targetPlatform")
+    args("-DCMAKE_INSTALL_PREFIX=${layout.buildDirectory.dir("install").get().asFile.absolutePath}")
     args("-DCMAKE_EXPORT_COMPILE_COMMANDS=1")
 }
 
@@ -89,6 +90,7 @@ val buildNative by tasks.registering(Exec::class) {
     commandLine("cmake")
     args("--build", cmakeBuildDir.get().asFile.absolutePath)
     args("--config", "Release")
+    args("--target", "install")
     
     if (!currentOs.isWindows) {
         args("-j", Runtime.getRuntime().availableProcessors())

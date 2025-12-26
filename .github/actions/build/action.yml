@@ -41,8 +41,11 @@ runs:
     - name: Build
       env:
         WEBRTC_PLATFORM: ${{ inputs.platform-name }}
-        SKIP_TESTS: ${{ inputs.platform-name == 'linux-aarch32' || inputs.platform-name == 'linux-aarch64' || inputs.platform-name == 'macos-x86_64' || inputs.platform-name == 'windows-aarch64' }}
-      run: ./gradlew build
+      run: ./gradlew build -x test
+      shell: bash
+
+    - name: List WebRTC cache folder contents
+      run: find $WEBRTC_CHECKOUT_FOLDER/build -maxdepth 2
       shell: bash
 
     - name: Archive webrtc-java
