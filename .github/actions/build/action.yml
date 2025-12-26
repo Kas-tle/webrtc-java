@@ -17,8 +17,8 @@ runs:
   steps:
     - name: Create WebRTC checkout folder
       run: |
-        mkdir -p $HOME/webrtc/build
-        echo "WEBRTC_CHECKOUT_FOLDER=$HOME/webrtc" >> $GITHUB_ENV
+        mkdir -p ~/webrtc/build
+        echo "WEBRTC_CHECKOUT_FOLDER=~/webrtc" >> $GITHUB_ENV
       shell: bash
 
     - name: Set up WebRTC cache
