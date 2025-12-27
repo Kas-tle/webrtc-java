@@ -1,3 +1,7 @@
+import kotlin.io.walk
+import kotlin.io.walkTopDown
+
+import java.io.File
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -66,8 +70,9 @@ publishing {
 
             pom {
                 name.set("webrtc-java")
-                description.set("Java native interface implementation based on the free, open WebRTC project.")
+                description.set("A JNI implementation WebRTC for data channels.")
                 url.set("https://github.com/Kas-tle/webrtc-java")
+                inceptionYear.set("2025")
                 licenses {
                     license {
                         name.set("The Apache Software License, Version 2.0")
@@ -85,23 +90,33 @@ publishing {
                     connection.set("scm:git:git://github.com/Kas-tle/webrtc-java.git")
                     url.set("https://github.com/Kas-tle/webrtc-java")
                 }
+                ciManagement {
+                    system.set("GitHub Actions")
+                    url.set("https://github.com/Kas-tle/webrtc-java/actions")
+                }
+                issueManagement {
+                    system.set("GitHub Issues")
+                    url.set("https://github.com/Kas-tle/webrtc-java/issues")
+                }
             }
 
             // These jars are downloaded by the GitHub Actions "Publish" job into a folder
-            val nativeLibsDir = project.findProperty("nativeLibsDir") as? String
-            if (nativeLibsDir != null) {
-                val dir = file(nativeLibsDir)
-                if (dir.exists()) {
-                    dir.listFiles()?.filter { it.name.endsWith(".jar") && it.name.contains("webrtc-java") }?.forEach { jarFile ->
-                        // Don't re-attach the main jar
-                        if (!jarFile.name.equals("webrtc-java-${version}.jar") && !jarFile.name.contains("-sources") && !jarFile.name.contains("-javadoc")) {
-                            artifact(jarFile) {
-                                // Extract classifier from filename: webrtc-java-0.15.0-linux-x86_64.jar -> linux-x86_64
-                                val classifierStr = jarFile.name
-                                    .replace("webrtc-java-${version}-", "")
-                                    .replace(".jar", "")
-                                classifier = classifierStr
-                            }
+            val nativeStagingdir = file(rootProject.projectDir.resolve("native-staging"))
+            if (nativeStagingdir.exists()) {
+                logger.lifecycle("Attaching native jars from: ${nativeStagingdir.absolutePath}")
+                // list files in dir and subdirs
+                val nativeFiles: Sequence<File> = nativeStagingdir.walkTopDown()
+
+                nativeFiles.filter { it.name.endsWith(".jar") && it.name.contains("webrtc-java") }.forEach { jarFile ->
+                    // Don't re-attach the main jar
+                    if (!jarFile.name.equals("webrtc-java-${version}.jar") && !jarFile.name.contains("-sources") && !jarFile.name.contains("-javadoc")) {
+                        artifact(jarFile) {
+                            // Extract classifier from filename: webrtc-java-0.15.0-linux-x86_64.jar -> linux-x86_64
+                            val classifierStr = jarFile.name
+                                .replace("webrtc-java-${version}-", "")
+                                .replace(".jar", "")
+                            classifier = classifierStr
+                            logger.lifecycle("Attached native jar: ${jarFile.name} with classifier: ${classifierStr}")
                         }
                     }
                 }
@@ -111,7 +126,7 @@ publishing {
 }
 
 signing {
-    if (System.getenv("PGP_SECRET") != null) {
+    if (System.getenv("PGP_SECRET") != null && System.getenv("PGP_PASSPHRASE") != null) {
         useInMemoryPgpKeys(System.getenv("PGP_SECRET"), System.getenv("PGP_PASSPHRASE"))
         sign(publishing.publications["maven"])
     }

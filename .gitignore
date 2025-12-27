@@ -34,3 +34,6 @@ webrtc-jni/src/main/cpp/dependencies/webrtc/webrtc-source/
 # VSCode / clangd
 .cache/
 compile_commands.json
+
+# CI
+native-staging/
