@@ -16,6 +16,7 @@ on:
 
 jobs:
   build-windows:
+    name: Build Windows
     strategy:
       fail-fast: false
       matrix:
@@ -27,15 +28,20 @@ jobs:
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - uses: Kas-tle/actions/checkout@main
+        name: Checkout Repository
       - uses: ./.github/actions/prepare-windows
+        name: Prepare Windows
       - uses: ./.github/actions/setup-gradle
         with:
           gradle-cache-read-only: "false"
+        name: Setup Gradle
       - uses: ./.github/actions/build
         with:
           platform-name: ${{ matrix.platform.name }}
+        name: Build
 
   test-windows:
+    name: Test Windows
     needs: build-windows
     strategy:
       fail-fast: false
@@ -53,12 +59,16 @@ jobs:
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - uses: Kas-tle/actions/checkout@main
+        name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
+        name: Setup Gradle
       - uses: ./.github/actions/test
         with:
           platform-name: ${{ matrix.platform.artifact-name }}
+        name: Test
 
   build-linux:
+    name: Build Linux
     strategy:
       fail-fast: false
       matrix:
@@ -72,15 +82,20 @@ jobs:
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - uses: Kas-tle/actions/checkout@main
+        name: Checkout Repository
       - uses: ./.github/actions/prepare-linux
+        name: Prepare Linux
       - uses: ./.github/actions/setup-gradle
         with:
           gradle-cache-read-only: "false"
+        name: Setup Gradle
       - uses: ./.github/actions/build
         with:
           platform-name: ${{ matrix.platform.name }}
+        name: Build
 
   test-linux:
+    name: Test Linux
     needs: build-linux
     strategy:
       fail-fast: false
@@ -113,14 +128,18 @@ jobs:
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - uses: Kas-tle/actions/checkout@main
+        name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
         with:
           java-architecture: ${{ matrix.platform.java-arch }}
+        name: Setup Gradle
       - uses: ./.github/actions/test
         with:
           platform-name: ${{ matrix.platform.artifact-name }}
+        name: Test
 
   build-macos:
+    name: Build macOS
     strategy:
       fail-fast: false
       matrix:
@@ -132,15 +151,20 @@ jobs:
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - uses: Kas-tle/actions/checkout@main
+        name: Checkout Repository
       - uses: ./.github/actions/prepare-macos
+        name: Prepare macOS
       - uses: ./.github/actions/setup-gradle
         with:
           gradle-cache-read-only: "false"
+        name: Setup Gradle
       - uses: ./.github/actions/build
         with:
           platform-name: ${{ matrix.platform.name }}
+        name: Build
 
   test-macos:
+    name: Test macOS
     needs: build-macos
     strategy:
       fail-fast: false
@@ -161,12 +185,16 @@ jobs:
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - uses: Kas-tle/actions/checkout@main
+        name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
+        name: Setup Gradle
       - uses: ./.github/actions/test
         with:
           platform-name: ${{ matrix.platform.artifact-name }}
+        name: Test
 
   detect-release:
+    name: Detect Release
     needs:
       - test-windows
       - test-linux
@@ -180,7 +208,8 @@ jobs:
       - uses: Kas-tle/actions/checkout@main
         with:
           fetch-depth: "0"
-      - name: Get Version
+        name: Checkout Repository
+      - name: Get Release Version
         id: version
         run: |
           version=$(cat gradle.properties | grep version= | cut -d'=' -f2)
@@ -190,6 +219,7 @@ jobs:
         shell: bash
 
   release:
+    name: Release and Publish
     needs:
       - detect-release
     if: ${{ success() && github.repository == 'Kas-tle/webrtc-java' && github.ref_name == 'master' && needs.detect-release.outputs.unreleased == 'true' }}
@@ -198,16 +228,18 @@ jobs:
       release_id: ${{ steps.release.outputs.releaseID }}
     steps:
       - uses: Kas-tle/actions/checkout@main
+        name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
+        name: Setup Gradle
       - uses: ./.github/actions/publish
         env:
           MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
-      - name: Make Release Publication
+        name: Publish to Maven Central
+      - uses: Kas-tle/base-release-action@65d06f835be34757c6d73c16959c97e92c2a3c7f
         id: release
-        uses: Kas-tle/base-release-action@65d06f835be34757c6d73c16959c97e92c2a3c7f
         with:
           files: |
             webrtc/build/libs/*.jar
@@ -223,6 +255,7 @@ jobs:
           releaseBodyDependencyUsage: "java"
           releaseBodyDependencyJavaGroupId: "dev.kastle.webrtc"
           releaseBodyDependencyJavaArtifactId: "webrtc-java"
+        name: Create Release
 
   upload-logs:
     name: Upload Logs
@@ -234,3 +267,4 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           releaseID: ${{ needs.release.outputs.release_id }}
+        name: Upload Build Logs to Release
