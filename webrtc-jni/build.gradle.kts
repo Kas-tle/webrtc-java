@@ -1,5 +1,8 @@
 import org.gradle.internal.os.OperatingSystem
 
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
 plugins {
     `java`
 }
@@ -34,8 +37,6 @@ if (targetPlatform == null) {
     targetPlatform = "$osFamily-$osArch"
 }
 
-logger.lifecycle("Configuring webrtc-jni for Platform: $targetPlatform")
-
 val toolchainFile = file("src/main/cpp/toolchain").resolve(
     when {
         targetPlatform == "linux-x86_64"   -> "x86_64-linux-clang.cmake"
@@ -52,6 +53,8 @@ val toolchainFile = file("src/main/cpp/toolchain").resolve(
 val cmakeBuildDir = layout.buildDirectory.dir("cmake/$targetPlatform")
 
 val configureNative by tasks.registering(Exec::class) {
+    logger.lifecycle("Configuring webrtc-jni for Platform: $targetPlatform")
+    
     group = "build"
     workingDir = file("src/main/cpp")
     
@@ -99,6 +102,7 @@ val buildNative by tasks.registering(Exec::class) {
 
 val copyNativeLibs by tasks.registering(Copy::class) {
     dependsOn(buildNative)
+    includeEmptyDirs = false
     
     from(fileTree(cmakeBuildDir).matching {
         include("**/*.so", "**/*.dll", "**/*.dylib")
@@ -120,17 +124,32 @@ val copyNativeLibs by tasks.registering(Copy::class) {
     eachFile { relativePath = RelativePath(true, name) }
 }
 
-sourceSets {
-    main {
-        resources {
-            srcDir(copyNativeLibs)
-        }
-    }
-}
-
 tasks.named<Jar>("jar") {
     archiveBaseName.set("webrtc-java")
     archiveClassifier.set(targetPlatform)
+
+    from(copyNativeLibs) {
+        into("/")
+    }
+
+    manifest {
+        val safePlatformName = targetPlatform?.replace("-", ".") ?: "unknown"
+        
+        attributes(
+            "Manifest-Version" to "1.0",
+            
+            "Implementation-Title" to "WebRTC Java Natives ($targetPlatform)",
+            "Implementation-Version" to project.version,
+            "Implementation-Vendor" to "Kas-tle",
+            
+            "Automatic-Module-Name" to "dev.kastle.webrtc.natives.$safePlatformName",
+            
+            "Created-By" to "Gradle ${gradle.gradleVersion}",
+            "Build-Jdk-Spec" to "17",
+            "Build-Date" to ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
+            "Build-Platform" to targetPlatform!!
+        )
+    }
 }
 
 tasks.withType<Javadoc> { enabled = false }

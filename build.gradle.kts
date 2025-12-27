@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.nmcp)
+    alias(libs.plugins.nmcp.aggregation)
     `maven-publish`
     `eclipse`
 }
@@ -10,6 +10,12 @@ allprojects {
 
     repositories {
         mavenCentral()
+    }
+}
+
+dependencies {
+    allprojects {
+        nmcpAggregation(project(path))
     }
 }
 

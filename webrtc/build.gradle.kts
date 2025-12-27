@@ -1,24 +1,23 @@
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
 plugins {
+    id("com.gradleup.nmcp")
     `java-library`
     `maven-publish`
     `signing`
 }
 
 dependencies {
-    val prebuiltJniPath = project.findProperty("prebuiltJniPath") as? String
-    if (prebuiltJniPath != null) {
-        api(files(prebuiltJniPath))
-        logger.lifecycle("Using prebuilt webrtc-jni from: $prebuiltJniPath")
-    } else {
-        api(project(":webrtc-jni"))
-    }
-    
     testImplementation(libs.bundles.junit)
     testRuntimeOnly(libs.junit.platform.launcher)
-    if (prebuiltJniPath != null) {
-        testRuntimeOnly(files(prebuiltJniPath))
-    } else {
+
+    val prebuiltJniPath = project.findProperty("prebuiltJniPath") as? String
+    if (prebuiltJniPath == null) {
         testRuntimeOnly(project(":webrtc-jni"))
+    } else {
+        testRuntimeOnly(files(prebuiltJniPath))
+        logger.lifecycle("Using prebuilt testing webrtc-jni from: $prebuiltJniPath")
     }
 }
 
@@ -37,6 +36,28 @@ tasks.named<Test>("test") {
         events("passed", "skipped", "failed")
     }
 }
+
+tasks.named<Jar>("jar") {
+    manifest {
+        attributes(
+            "Manifest-Version" to "1.0",
+            
+            "Implementation-Title" to "WebRTC Java",
+            "Implementation-Version" to project.version,
+            "Implementation-Vendor" to "Kas-tle",
+            
+            "Automatic-Module-Name" to "dev.kastle.webrtc", 
+            
+            "Bundle-SymbolicName" to "dev.kastle.webrtc",
+            "Bundle-Version" to project.version,
+            
+            "Created-By" to "Gradle ${gradle.gradleVersion}",
+            "Build-Jdk-Spec" to "17",
+            "Build-Date" to ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT)
+        )
+    }
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
