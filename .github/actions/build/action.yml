@@ -3,11 +3,6 @@ name: "Gradle Build"
 description: "Build the platform dependent Java library"
 
 inputs:
-  java-version:
-    description: "The Java build version."
-    required: true
-    default: "17"
-
   platform-name:
     description: "The target platform."
     required: true
@@ -27,16 +22,6 @@ runs:
       with:
         path: ${{ env.WEBRTC_CHECKOUT_FOLDER }}/build
         key: webrtc-${{ hashFiles('webrtc-jni/gradle.properties') }}-${{ inputs.platform-name }}-${{ hashFiles('webrtc-jni/src/main/cpp/dependencies/webrtc/CMakeLists.txt') }}
-        restore-keys: webrtc-${{ hashFiles('webrtc-jni/gradle.properties') }}-${{ inputs.platform-name }}-
-
-    - uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
-      # https://github.com/actions/setup-java/releases/latest
-      with:
-        distribution: "liberica"
-        java-version: ${{ inputs.java-version }}
-
-    - uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2
-      # https://github.com/gradle/actions/releases/latest
 
     - name: Build
       env:

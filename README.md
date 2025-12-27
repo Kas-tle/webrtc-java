@@ -24,7 +24,7 @@ Note that the natives are not bundled with the main library, so you will need to
 
 The project has a preconfigured `.vscode` setup for easy development. Make sure to install the recommended extensions when prompted. Run the `./gradlew build` command to build the project. Note that building the native libraries requires [clang](https://clang.llvm.org/get_started.html) and [cmake](https://cmake.org/download/) to be installed and on your path.
 
-The initial build will take significant time to compile, as cloning the WebRTC source code brings in multiple other repo source trees from the Chromium project, requiring about 20 GB of disk space. On Windows, you may need to set `WEBRTC_CHECKOUT_FOLDER` to a shorter path to avoid exceeding file path length limits.
+The initial build will take significant time to compile, as cloning the WebRTC source code brings in multiple other repo source trees from the Chromium project, requiring about 30 GB of disk space. On Windows, you may need to set `WEBRTC_CHECKOUT_FOLDER` to a shorter path to avoid exceeding file path length limits.
 
 The version of WebRTC used can be changed by modifying the `webrtc.branch` property in [`webrtc-jni/gradle.properties`](webrtc-jni/gradle.properties). Note, however, that changing the version used will likely require updating the patches in [`webrtc-jni/src/main/cpp/dependencies/webrtc/patches/`](webrtc-jni/src/main/cpp/dependencies/webrtc/patches/) to ensure successful compilation.
 

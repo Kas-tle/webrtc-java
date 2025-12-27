@@ -1,0 +1,23 @@
+name: "Download Artifacts"
+
+description: "Downloads the specified artifacts"
+
+inputs:
+  name:
+    description: "The name of the artifact to download."
+    required: false
+    default: ""
+  path:
+    description: "The path to download the artifact to."
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download Artifacts
+      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+      # https://github.com/actions/download-artifact/releases/latest
+      with:
+        name: ${{ inputs.name }}
+        path: ${{ inputs.path }}

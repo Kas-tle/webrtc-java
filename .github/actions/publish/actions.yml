@@ -1,0 +1,14 @@
+name: "Gradle Publish"
+
+description: "Publish the library to Maven Central"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: ./github/actions/download-artifact
+      with:
+        path: native-staging
+
+    - name: Publish
+      run: ./gradlew publishAggregationToCentralPortal
+      shell: bash
