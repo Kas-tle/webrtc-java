@@ -5,7 +5,7 @@ description: "Publish the library to Maven Central"
 runs:
   using: "composite"
   steps:
-    - uses: ./github/actions/download-artifact
+    - uses: ./.github/actions/download-artifact
       with:
         path: native-staging
 
