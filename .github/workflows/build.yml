@@ -26,7 +26,7 @@ jobs:
             runs-on: windows-2022
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: Kas-tle/actions/checkout@main
       - uses: ./.github/actions/prepare-windows
       - uses: ./.github/actions/setup-gradle
         with:
@@ -52,7 +52,7 @@ jobs:
             runs-on: windows-11-arm
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: Kas-tle/actions/checkout@main
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/test
         with:
@@ -71,7 +71,7 @@ jobs:
             runs-on: ubuntu-22.04
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: Kas-tle/actions/checkout@main
       - uses: ./.github/actions/prepare-linux
       - uses: ./.github/actions/setup-gradle
         with:
@@ -112,7 +112,7 @@ jobs:
             java-arch: x64
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: Kas-tle/actions/checkout@main
       - uses: ./.github/actions/setup-gradle
         with:
           java-architecture: ${{ matrix.platform.java-arch }}
@@ -131,7 +131,7 @@ jobs:
             runs-on: macos-14
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: Kas-tle/actions/checkout@main
       - uses: ./.github/actions/prepare-macos
       - uses: ./.github/actions/setup-gradle
         with:
@@ -160,7 +160,7 @@ jobs:
             runs-on: macos-26
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: Kas-tle/actions/checkout@main
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/test
         with:
@@ -177,7 +177,7 @@ jobs:
       unreleased: ${{ steps.version.outputs.unreleased }}
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: Kas-tle/actions/checkout@main
         with:
           fetch-depth: "0"
       - name: Get Version
@@ -197,7 +197,7 @@ jobs:
     outputs:
       release_id: ${{ steps.release.outputs.releaseID }}
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: Kas-tle/actions/checkout@main
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/publish
         env:
