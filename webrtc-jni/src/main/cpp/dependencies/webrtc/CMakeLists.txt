@@ -193,52 +193,47 @@ set(ENV{PATH} "${WEBRTC_SRC_DIR}/depot_tools${PATH_SEP}$ENV{PATH}")
 
 file(MAKE_DIRECTORY ${WEBRTC_DIR})
 
-message(STATUS "WebRTC: fetch")
+message(STATUS "WebRTC: Configuring gclient for branch ${WEBRTC_BRANCH}")
+
 execute_command(
-    COMMAND fetch --nohooks --no-history webrtc
+    COMMAND gclient config --name src --unmanaged "https://webrtc.googlesource.com/src.git@${WEBRTC_BRANCH}"
     WORKING_DIRECTORY "${WEBRTC_DIR}"
 )
 
-message(STATUS "WebRTC: checkout \"${WEBRTC_BRANCH}\"")
+if(APPLE)
+    set(WEBRTC_TARGET_OS "['mac']")
+elseif(WIN32)
+    set(WEBRTC_TARGET_OS "['win']")
+else()
+    set(WEBRTC_TARGET_OS "['linux']")
+endif()
+
+file(APPEND "${WEBRTC_DIR}/.gclient" "target_os = ${WEBRTC_TARGET_OS}\n")
+
+message(STATUS "WebRTC: Syncing Sources (No Hooks, Shallow)")
 execute_command(
-    COMMAND git checkout .
-    WORKING_DIRECTORY "${WEBRTC_SRC}"
+    COMMAND gclient sync -D --no-history --nohooks -j16
+    WORKING_DIRECTORY "${WEBRTC_DIR}"
 )
 
-message(STATUS "WebRTC: fetching specific branch ${WEBRTC_BRANCH}")
-execute_command(
-    COMMAND git fetch origin ${WEBRTC_BRANCH}:${WEBRTC_BRANCH}
-    WORKING_DIRECTORY "${WEBRTC_SRC}"
-)
-
-message(STATUS "WebRTC: checkout to ${WEBRTC_BRANCH}")
-execute_command(
-    COMMAND git checkout ${WEBRTC_BRANCH}
-    WORKING_DIRECTORY "${WEBRTC_SRC}"
-)
-
-message(STATUS "WebRTC: Patching DEPS to skip download of test resources")
+message(STATUS "WebRTC: Patching DEPS")
 set(DEPS_FILE "${WEBRTC_SRC}/DEPS")
-
 if(EXISTS "${DEPS_FILE}")
     file(READ "${DEPS_FILE}" DEPS_CONTENT)
-
     string(REPLACE 
         "'src/resources']," 
         "'src/resources'], 'condition': 'False'," 
         DEPS_CONTENT 
         "${DEPS_CONTENT}"
     )
-
     file(WRITE "${DEPS_FILE}" "${DEPS_CONTENT}")
 else()
     message(WARNING "WebRTC: DEPS file not found. Optimization skipped.")
 endif()
 
-
-message(STATUS "WebRTC: sync")
+message(STATUS "WebRTC: Final Sync (Artifacts)")
 execute_command(
-    COMMAND gclient sync -D --no-history -j8
+    COMMAND gclient sync -D --no-history -j16
     WORKING_DIRECTORY "${WEBRTC_DIR}"
 )
 
@@ -299,7 +294,6 @@ rtc_enable_protobuf=false \
 rtc_include_tests=false \
 rtc_include_dav1d_in_internal_decoder_factory=false \
 rtc_enable_google_benchmarks=false \
-rtc_video_psnr=false \
 use_rtti=true \
 symbol_level=0 \
 use_dbus=false \
