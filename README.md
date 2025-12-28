@@ -28,6 +28,11 @@ The base project is published under the group `dev.kastle.webrtc` and artifact `
     <groupId>dev.kastle.webrtc</groupId>
     <artifactId>webrtc-java</artifactId>
     <version>VERSION</version>
+</dependency>
+<dependency>
+    <groupId>dev.kastle.webrtc</groupId>
+    <artifactId>webrtc-java</artifactId>
+    <version>VERSION</version>
     <classifier>PLATFORM-ARCH</classifier>
 </dependency>
 ```
@@ -37,6 +42,7 @@ The base project is published under the group `dev.kastle.webrtc` and artifact `
 <summary>Gradle Usage (Groovy)</summary>
 
 ```groovy
+implementation 'dev.kastle.webrtc:webrtc-java:VERSION'
 implementation 'dev.kastle.webrtc:webrtc-java:VERSION:PLATFORM-ARCH'
 ```
 </details>
@@ -45,6 +51,7 @@ implementation 'dev.kastle.webrtc:webrtc-java:VERSION:PLATFORM-ARCH'
 <summary>Gradle Usage (Kotlin DSL)</summary>
 
 ```kotlin
+implementation("dev.kastle.webrtc:webrtc-java:VERSION")
 implementation("dev.kastle.webrtc:webrtc-java:VERSION:PLATFORM-ARCH")
 ```
 </details>

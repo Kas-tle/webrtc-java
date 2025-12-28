@@ -253,7 +253,7 @@ jobs:
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
         name: Publish to Maven Central
-      - uses: Kas-tle/base-release-action@3f67ffdb23c6a5267660b0e8c5beccf8056d7c44
+      - uses: Kas-tle/base-release-action@b89ab10da9dfaa0b5fb0ca9e77679c7c7d1297f8
         id: release
         with:
           files: |
