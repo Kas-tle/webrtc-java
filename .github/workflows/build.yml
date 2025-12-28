@@ -258,7 +258,7 @@ jobs:
         with:
           files: |
             webrtc/build/libs/*.jar
-            native-staging/**/*.jar
+            native-staging/webrtc-java-jni-*/*.jar
           appID: ${{ secrets.RELEASE_APP_ID }}
           appPrivateKey: ${{ secrets.RELEASE_APP_PK }}
           discordWebhook: ${{ secrets.DISCORD_WEBHOOK }}
