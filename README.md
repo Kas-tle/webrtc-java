@@ -1,3 +1,5 @@
+[![Maven Central Version](https://img.shields.io/maven-central/v/dev.kastle.webrtc/webrtc-java?label=Maven%20Central&color=%233fb950)](https://repo1.maven.org/maven2/dev/kastle/webrtc/webrtc-java/)
+
 This is a fork of devopvoid's [webrtc-java](https://github.com/devopvoid/webrtc-java) library, a Java wrapper for the [WebRTC Native API](https://webrtc.github.io/webrtc-org/native-code/native-apis).
 
 ## Differences from the Original Project
@@ -17,6 +19,35 @@ The base project is published under the group `dev.kastle.webrtc` and artifact `
 - `windows-aarch64`
 - `macos-x86_64`
 - `macos-aarch64`
+
+<details>
+<summary>Maven Usage</summary>
+
+```xml
+<dependency>
+    <groupId>dev.kastle.webrtc</groupId>
+    <artifactId>webrtc-java</artifactId>
+    <version>VERSION</version>
+    <classifier>PLATFORM-ARCH</classifier>
+</dependency>
+```
+</details>
+
+<details>
+<summary>Gradle Usage (Groovy)</summary>
+
+```groovy
+implementation 'dev.kastle.webrtc:webrtc-java:VERSION:PLATFORM-ARCH'
+```
+</details>
+
+<details>
+<summary>Gradle Usage (Kotlin DSL)</summary>
+
+```kotlin
+implementation("dev.kastle.webrtc:webrtc-java:VERSION:PLATFORM-ARCH")
+```
+</details>
 
 Note that the natives are not bundled with the main library, so you will need to appropriately include those that are needed for your project. If your project is an executable jar, you may want to read [JEP-472](https://openjdk.org/jeps/472). Because this project uses JNI, you may need to enable native access, depending on your Java version and execution environment. The main module is named `dev.kastle.webrtc`, and the natives modules are named `dev.kastle.webrtc.natives.<platform>` (e.g. `dev.kastle.webrtc.natives.linux.x86_64`), with any hyphens replaced by periods.
 
