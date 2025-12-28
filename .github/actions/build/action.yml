@@ -6,6 +6,9 @@ inputs:
   platform-name:
     description: "The target platform."
     required: true
+  platform-arch:
+    description: "The target platform architecture."
+    required: true
 
 runs:
   using: "composite"
@@ -16,16 +19,24 @@ runs:
         echo "WEBRTC_CHECKOUT_FOLDER=~/webrtc" >> $GITHUB_ENV
       shell: bash
 
-    - name: Set up WebRTC cache
-      uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c
+    - name: Restore WebRTC cache
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c
       # https://github.com/actions/cache/releases/latest
       with:
         path: ${{ env.WEBRTC_CHECKOUT_FOLDER }}/build
-        key: webrtc-${{ hashFiles('webrtc-jni/gradle.properties') }}-${{ inputs.platform-name }}-${{ hashFiles('webrtc-jni/src/main/cpp/dependencies/webrtc/CMakeLists.txt') }}
+        key: >- 
+          webrtc-${{ hashFiles('webrtc-jni/gradle.properties') }}-${{ inputs.platform-name }}-${{ inputs.platform-arch }}-${{
+            hashFiles(
+              'webrtc-jni/src/main/cpp/CMakeLists.txt',
+              'webrtc-jni/src/main/cpp/dependencies/webrtc/CMakeLists.txt',
+              format('webrtc-jni/src/main/cpp/dependencies/webrtc/patches/{0}/*.patch', inputs.platform-name),
+              format('webrtc-jni/src/main/cpp/toolchain/{0}-{1}.cmake', inputs.platform-name, inputs.platform-arch)
+            )
+          }}
 
     - name: Build
       env:
-        WEBRTC_PLATFORM: ${{ inputs.platform-name }}
+        WEBRTC_PLATFORM: ${{ inputs.platform-name }}-${{ inputs.platform-arch }}
       run: ./gradlew build -x test
       shell: bash
 
@@ -33,12 +44,28 @@ runs:
       uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
       # https://github.com/actions/upload-artifact/releases/latest
       with:
-        name: webrtc-java-${{ inputs.platform-name }}
+        name: webrtc-java-${{ inputs.platform-name }}-${{ inputs.platform-arch }}
         path: webrtc/build/libs/*.jar
 
     - name: Archive webrtc-java-jni
       uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
       # https://github.com/actions/upload-artifact/releases/latest
       with:
-        name: webrtc-java-jni-${{ inputs.platform-name }}
+        name: webrtc-java-jni-${{ inputs.platform-name }}-${{ inputs.platform-arch }}
         path: webrtc-jni/build/libs/*.jar
+
+    - name: Save WebRTC cache
+      uses: actions/cache/save@6f8efc29b200d32929f49075959781ed54ec270c
+      # https://github.com/actions/cache/releases/latest
+      if: ${{ github.event_name != 'pull_request' }}
+      with:
+        path: ${{ env.WEBRTC_CHECKOUT_FOLDER }}/build
+        key: >- 
+          webrtc-${{ hashFiles('webrtc-jni/gradle.properties') }}-${{ inputs.platform-name }}-${{ inputs.platform-arch }}-${{
+            hashFiles(
+              'webrtc-jni/src/main/cpp/CMakeLists.txt',
+              'webrtc-jni/src/main/cpp/dependencies/webrtc/CMakeLists.txt',
+              format('webrtc-jni/src/main/cpp/dependencies/webrtc/patches/{0}/*.patch', inputs.platform-name),
+              format('webrtc-jni/src/main/cpp/toolchain/{0}-{1}.cmake', inputs.platform-name, inputs.platform-arch)
+            )
+          }}

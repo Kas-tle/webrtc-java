@@ -6,13 +6,16 @@ inputs:
   platform-name:
     description: "The target platform."
     required: true
+  platform-arch:
+    description: "The target platform architecture."
+    required: true
 
 runs:
   using: "composite"
   steps:
     - uses: ./.github/actions/download-artifact
       with:
-        name: webrtc-java-jni-${{ inputs.platform-name }}
+        name: webrtc-java-jni-${{ inputs.platform-name }}-${{ inputs.platform-arch }}
         path: artifacts
 
     - name: Test

@@ -2,6 +2,11 @@ name: "Prepare Linux Build"
 
 description: "Frees up disk space and installs required packages for Linux builds."
 
+inputs:
+  platform-arch:
+    description: "The target platform architecture."
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -42,7 +47,7 @@ runs:
       shell: bash
 
     - name: Install required packages for linux-x86_64
-      if: matrix.platform.name == 'linux-x86_64'
+      if: inputs.platform-arch == 'x86_64'
       run: |
         sudo mkdir /opt/sysroot
         python3 webrtc-jni/src/main/cpp/dependencies/webrtc/linux/sysroot/install-sysroot.py --arch=amd64
@@ -50,7 +55,7 @@ runs:
       shell: bash
 
     - name: Install required packages for linux-aarch32
-      if: matrix.platform.name == 'linux-aarch32'
+      if: inputs.platform-arch == 'aarch32'
       run: |
         sudo apt install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
 
@@ -60,7 +65,7 @@ runs:
       shell: bash
 
     - name: Install required packages for linux-aarch64
-      if: matrix.platform.name == 'linux-aarch64'
+      if: inputs.platform-arch == 'aarch64'
       run: |
         sudo apt install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 

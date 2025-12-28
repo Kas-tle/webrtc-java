@@ -21,23 +21,26 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - name: windows-x86_64
+          - name: windows
+            arch: x86_64
             runs-on: windows-2022
-          - name: windows-aarch64
+          - name: windows
+            arch: aarch64
             runs-on: windows-2022
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: Kas-tle/actions/checkout@main
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         name: Checkout Repository
       - uses: ./.github/actions/prepare-windows
         name: Prepare Windows
       - uses: ./.github/actions/setup-gradle
         with:
-          gradle-cache-read-only: "false"
+          gradle-cache-read-only: ${{ github.event_name == 'pull_request' }}
         name: Setup Gradle
       - uses: ./.github/actions/build
         with:
           platform-name: ${{ matrix.platform.name }}
+          platform-arch: ${{ matrix.platform.arch }}
         name: Build
 
   test-windows:
@@ -47,24 +50,25 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - name: windows-2022_windows-x86_64
-            artifact-name: windows-x86_64
+          - name: windows
+            arch: x86_64
             runs-on: windows-2022
-          - name: windows-2025_windows-x86_64
-            artifact-name: windows-x86_64
+          - name: windows
+            arch: x86_64
             runs-on: windows-2025
-          - name: windows-11-arm_windows-aarch64
-            artifact-name: windows-aarch64
+          - name: windows
+            arch: aarch64
             runs-on: windows-11-arm
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: Kas-tle/actions/checkout@main
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
         name: Setup Gradle
       - uses: ./.github/actions/test
         with:
-          platform-name: ${{ matrix.platform.artifact-name }}
+          platform-name: ${{ matrix.platform.name }}
+          platform-arch: ${{ matrix.platform.arch }}
         name: Test
 
   build-linux:
@@ -73,25 +77,31 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - name: linux-aarch32
+          - name: linux
+            arch: aarch32
             runs-on: ubuntu-22.04
-          - name: linux-aarch64
+          - name: linux
+            arch: aarch64
             runs-on: ubuntu-22.04
-          - name: linux-x86_64
+          - name: linux
+            arch: x86_64
             runs-on: ubuntu-22.04
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: Kas-tle/actions/checkout@main
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         name: Checkout Repository
       - uses: ./.github/actions/prepare-linux
+        with:
+          platform-arch: ${{ matrix.platform.arch }}
         name: Prepare Linux
       - uses: ./.github/actions/setup-gradle
         with:
-          gradle-cache-read-only: "false"
+          gradle-cache-read-only: ${{ github.event_name == 'pull_request' }}
         name: Setup Gradle
       - uses: ./.github/actions/build
         with:
           platform-name: ${{ matrix.platform.name }}
+          platform-arch: ${{ matrix.platform.arch }}
         name: Build
 
   test-linux:
@@ -101,33 +111,33 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - name: ubuntu-22.04-arm_linux-aarch32
-            artifact-name: linux-aarch32
+          - name: linux
+            arch: aarch32
             runs-on: ubuntu-22.04-arm
             java-arch: armv7
-          - name: ubuntu-24.04-arm_linux-aarch32
-            artifact-name: linux-aarch32
+          - name: linux
+            arch: aarch32
             runs-on: ubuntu-24.04-arm
             java-arch: armv7
-          - name: ubuntu-22.04-arm_linux-aarch64
-            artifact-name: linux-aarch64
+          - name: linux
+            arch: aarch64
             runs-on: ubuntu-22.04-arm
             java-arch: aarch64
-          - name: ubuntu-24.04-arm_linux-aarch64
-            artifact-name: linux-aarch64
+          - name: linux
+            arch: aarch64
             runs-on: ubuntu-24.04-arm
             java-arch: aarch64
-          - name: ubuntu-22.04_linux-x86_64
-            artifact-name: linux-x86_64
+          - name: linux
+            arch: x86_64
             runs-on: ubuntu-22.04
             java-arch: x64
-          - name: ubuntu-24.04_linux-x86_64
-            artifact-name: linux-x86_64
+          - name: linux
+            arch: x86_64
             runs-on: ubuntu-24.04
             java-arch: x64
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: Kas-tle/actions/checkout@main
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
         with:
@@ -135,7 +145,8 @@ jobs:
         name: Setup Gradle
       - uses: ./.github/actions/test
         with:
-          platform-name: ${{ matrix.platform.artifact-name }}
+          platform-name: ${{ matrix.platform.name }}
+          platform-arch: ${{ matrix.platform.arch }}
         name: Test
 
   build-macos:
@@ -144,23 +155,26 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - name: macos-x86_64
+          - name: macos
+            arch: x86_64
             runs-on: macos-14
-          - name: macos-aarch64
+          - name: macos
+            arch: aarch64
             runs-on: macos-14
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: Kas-tle/actions/checkout@main
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         name: Checkout Repository
       - uses: ./.github/actions/prepare-macos
         name: Prepare macOS
       - uses: ./.github/actions/setup-gradle
         with:
-          gradle-cache-read-only: "false"
+          gradle-cache-read-only: ${{ github.event_name == 'pull_request' }}
         name: Setup Gradle
       - uses: ./.github/actions/build
         with:
           platform-name: ${{ matrix.platform.name }}
+          platform-arch: ${{ matrix.platform.arch }}
         name: Build
 
   test-macos:
@@ -170,27 +184,28 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - name: macos-15-intel_macos-x86_64
-            artifact-name: macos-x86_64
+          - name: macos
+            arch: x86_64
             runs-on: macos-15-intel
-          - name: macos-14_macos-aarch64
-            artifact-name: macos-aarch64
+          - name: macos
+            arch: aarch64
             runs-on: macos-14
-          - name: macos-15_macos-aarch64
-            artifact-name: macos-aarch64
+          - name: macos
+            arch: aarch64
             runs-on: macos-15
-          - name: macos-26_macos-aarch64
-            artifact-name: macos-aarch64
+          - name: macos
+            arch: aarch64
             runs-on: macos-26
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: Kas-tle/actions/checkout@main
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
         name: Setup Gradle
       - uses: ./.github/actions/test
         with:
-          platform-name: ${{ matrix.platform.artifact-name }}
+          platform-name: ${{ matrix.platform.name }}
+          platform-arch: ${{ matrix.platform.arch }}
         name: Test
 
   detect-release:
@@ -205,7 +220,7 @@ jobs:
       unreleased: ${{ steps.version.outputs.unreleased }}
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: Kas-tle/actions/checkout@main
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           fetch-depth: "0"
         name: Checkout Repository
@@ -227,7 +242,7 @@ jobs:
     outputs:
       release_id: ${{ steps.release.outputs.releaseID }}
     steps:
-      - uses: Kas-tle/actions/checkout@main
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
         name: Setup Gradle

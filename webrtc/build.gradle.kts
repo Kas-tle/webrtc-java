@@ -103,7 +103,7 @@ publishing {
             // These jars are downloaded by the GitHub Actions "Publish" job into a folder
             val nativeStagingdir = file(rootProject.projectDir.resolve("native-staging"))
             if (nativeStagingdir.exists()) {
-                logger.lifecycle("Attaching native jars from: ${nativeStagingdir.absolutePath}")
+                logger.lifecycle("Maven publication will include native jars from: ${nativeStagingdir.absolutePath}")
                 // list files in dir and subdirs
                 val nativeFiles: Sequence<File> = nativeStagingdir.walkTopDown()
 
@@ -116,7 +116,7 @@ publishing {
                                 .replace("webrtc-java-${version}-", "")
                                 .replace(".jar", "")
                             classifier = classifierStr
-                            logger.lifecycle("Attached native jar: ${jarFile.name} with classifier: ${classifierStr}")
+                            logger.lifecycle("Attached native jar to maven publication: ${jarFile.name} with classifier: ${classifierStr}")
                         }
                     }
                 }

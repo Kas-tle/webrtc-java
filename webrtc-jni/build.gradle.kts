@@ -37,18 +37,7 @@ if (targetPlatform == null) {
     targetPlatform = "$osFamily-$osArch"
 }
 
-val toolchainFile = file("src/main/cpp/toolchain").resolve(
-    when {
-        targetPlatform == "linux-x86_64"   -> "x86_64-linux-clang.cmake"
-        targetPlatform == "linux-aarch64"  -> "aarch64-linux-clang.cmake"
-        targetPlatform == "linux-aarch32"  -> "aarch32-linux-clang.cmake"
-        targetPlatform == "windows-x86_64" -> "x86_64-windows-clang.cmake"
-        targetPlatform == "windows-aarch64" -> "aarch64-windows-clang.cmake"
-        targetPlatform == "macos-x86_64"   -> "x86_64-macos-cross.cmake"
-        targetPlatform == "macos-aarch64"  -> "aarch64-macos-clang.cmake"
-        else -> "unknown-toolchain.cmake"
-    }
-)
+val toolchainFile = file("src/main/cpp/toolchain").resolve("$targetPlatform.cmake")
 
 val cmakeBuildDir = layout.buildDirectory.dir("cmake/$targetPlatform")
 
