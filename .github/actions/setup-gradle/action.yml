@@ -1,0 +1,38 @@
+name: "Setup Gradle"
+
+description: "Sets up Gradle and Java for use in actions"
+
+inputs:
+  java-architecture:
+    description: "The target architecture."
+    required: false
+    default: ""
+
+  gradle-cache-read-only:
+    description: "Whether to set up Gradle cache in read-only mode."
+    required: false
+    default: "true"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install 32-bit ARM libraries
+      if: inputs.java-architecture == 'armv7'
+      run: |
+        sudo dpkg --add-architecture armhf
+        sudo apt-get update
+        sudo apt-get install -y libc6:armhf libstdc++6:armhf zlib1g:armhf
+      shell: bash
+
+    - uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e
+      # https://github.com/actions/setup-java/releases/latest
+      with:
+        distribution: "liberica"
+        java-version: "17"
+        architecture: ${{ inputs.java-architecture }}
+
+    - uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2
+      # https://github.com/gradle/actions/releases/latest
+      with:
+        cache-read-only: ${{ inputs.gradle-cache-read-only }}
+

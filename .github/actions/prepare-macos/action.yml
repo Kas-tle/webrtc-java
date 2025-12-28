@@ -1,14 +1,12 @@
-name: 'Prepare macOS Build'
+name: "Prepare macOS Build"
 
-description: 'Installs required packages for macOS builds.'
+description: "Installs required packages for macOS builds."
 
 runs:
   using: "composite"
   steps:
     - name: Install required packages
-      run: |
-        # Required on macos-14
-        brew install python-setuptools
+      run: brew install python-setuptools
       shell: bash
 
     - name: Select Xcode version

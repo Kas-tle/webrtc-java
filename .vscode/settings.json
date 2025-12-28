@@ -1,0 +1,14 @@
+{
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "yaml.format.enable": true,
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml",
+        "editor.tabSize": 2,
+        "editor.detectIndentation": false
+    },
+    "[github-actions-workflow]": {
+        "editor.tabSize": 2,
+        "editor.autoIndent": "keep",
+        "editor.detectIndentation": false
+    }
+}

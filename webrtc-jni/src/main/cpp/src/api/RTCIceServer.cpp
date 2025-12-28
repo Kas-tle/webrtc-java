@@ -18,7 +18,6 @@
 #include "JavaArrayList.h"
 #include "JavaClasses.h"
 #include "JavaEnums.h"
-#include "JavaIterable.h"
 #include "JavaList.h"
 #include "JavaRef.h"
 #include "JavaObject.h"

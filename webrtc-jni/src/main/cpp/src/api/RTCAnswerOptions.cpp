@@ -16,10 +16,7 @@
 
 #include "api/RTCAnswerOptions.h"
 #include "JavaClasses.h"
-#include "JavaEnums.h"
 #include "JavaObject.h"
-#include "JavaString.h"
-#include "Exception.h"
 #include "JNI_WebRTC.h"
 
 namespace jni

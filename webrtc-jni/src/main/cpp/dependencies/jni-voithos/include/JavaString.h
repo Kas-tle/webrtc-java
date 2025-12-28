@@ -13,6 +13,7 @@
 
 #include <jni.h>
 #include <string>
+#include <vector>
 
 namespace jni
 {

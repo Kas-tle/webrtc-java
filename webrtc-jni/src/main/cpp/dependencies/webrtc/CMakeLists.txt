@@ -36,15 +36,12 @@ if(NOT DEFINED WEBRTC_BRANCH)
 endif()
 
 if(NOT DEFINED WEBRTC_SRC_DIR)
-    if(DEFINED ENV{CTEST_REAL_HOME})
-        set(WEBRTC_SRC_DIR "$ENV{CTEST_REAL_HOME}")
+    if (DEFINED ENV{WEBRTC_CHECKOUT_FOLDER})
+        set(WEBRTC_SRC_DIR "$ENV{WEBRTC_CHECKOUT_FOLDER}")
     else()
-        set(WEBRTC_SRC_DIR "$ENV{HOME}")
+        set(WEBRTC_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/webrtc-source")
     endif()
-
-    if(NOT WEBRTC_SRC_DIR AND WIN32)
-        file(TO_CMAKE_PATH "$ENV{USERPROFILE}" WEBRTC_SRC_DIR)
-    endif()
+    file(MAKE_DIRECTORY "${WEBRTC_SRC_DIR}")
 endif()
 
 if(NOT DEFINED WEBRTC_INSTALL_DIR)
@@ -154,7 +151,6 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${TARGET_INC_DIR}
         ${TARGET_INC_DIR}/third_party/abseil-cpp
-        ${TARGET_INC_DIR}/third_party/libyuv/include
 )
 target_link_libraries(${PROJECT_NAME} ${TARGET_LINK_LIB})
 
@@ -164,19 +160,14 @@ if(APPLE)
             ${TARGET_INC_DIR}/sdk/objc
             ${TARGET_INC_DIR}/sdk/objc/base
     )
-    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_MAC WEBRTC_POSIX WEBRTC_USE_H264)
-    target_link_libraries(${PROJECT_NAME} "-framework Foundation" "-framework AVFoundation" "-framework CoreGraphics" "-framework CoreAudio" "-framework CoreVideo" "-framework ScreenCaptureKit" "-framework AudioToolbox" "-framework IOSurface" "-framework ApplicationServices" "-framework AppKit")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_MAC WEBRTC_POSIX)
+    target_link_libraries(${PROJECT_NAME} "-framework Foundation" "-framework AVFoundation" "-framework CoreMedia" "-framework CoreVideo")
 elseif(LINUX)
-    # Find DBus
-    find_package(PkgConfig QUIET REQUIRED) # Include functions provided by PkgConfig module.
-    pkg_check_modules(DBUS REQUIRED dbus-1)
-
-    target_include_directories(${PROJECT_NAME} PUBLIC ${DBUS_INCLUDE_DIRS})
-    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_LINUX WEBRTC_POSIX WEBRTC_USE_H264)
-    target_link_libraries(${PROJECT_NAME} X11 Xfixes Xrandr Xcomposite dbus-1)
+    target_include_directories(${PROJECT_NAME} PUBLIC)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_LINUX WEBRTC_POSIX)
 elseif(WIN32)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_WIN WEBRTC_USE_H264 NOMINMAX WIN32_LEAN_AND_MEAN NDEBUG)
-    target_link_libraries(${PROJECT_NAME} D3D11 DXGI user32 gdi32 iphlpapi dmoguids msdmo secur32 strmiids winmm wmcodecdspuuid ws2_32)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC WEBRTC_WIN NOMINMAX WIN32_LEAN_AND_MEAN NDEBUG)
+    target_link_libraries(${PROJECT_NAME} user32 iphlpapi secur32 ws2_32 winmm)
 endif()
 
 if(EXISTS "${WEBRTC_LIB_PATH}" OR EXISTS "${WEBRTC_LIB_PATH_INSTALLED}")
@@ -202,25 +193,47 @@ set(ENV{PATH} "${WEBRTC_SRC_DIR}/depot_tools${PATH_SEP}$ENV{PATH}")
 
 file(MAKE_DIRECTORY ${WEBRTC_DIR})
 
-message(STATUS "WebRTC: fetch")
+message(STATUS "WebRTC: Configuring gclient for branch ${WEBRTC_BRANCH}")
+
 execute_command(
-    COMMAND fetch --nohooks webrtc
+    COMMAND gclient config --name src --unmanaged "https://webrtc.googlesource.com/src.git@${WEBRTC_BRANCH}"
     WORKING_DIRECTORY "${WEBRTC_DIR}"
 )
 
-message(STATUS "WebRTC: checkout \"${WEBRTC_BRANCH}\"")
+if(APPLE)
+    set(WEBRTC_TARGET_OS "['mac']")
+elseif(WIN32)
+    set(WEBRTC_TARGET_OS "['win']")
+else()
+    set(WEBRTC_TARGET_OS "['linux']")
+endif()
+
+file(APPEND "${WEBRTC_DIR}/.gclient" "target_os = ${WEBRTC_TARGET_OS}\n")
+
+message(STATUS "WebRTC: Syncing Sources (No Hooks, Shallow)")
 execute_command(
-    COMMAND git checkout .
-    WORKING_DIRECTORY "${WEBRTC_SRC}"
-)
-execute_command(
-    COMMAND git checkout ${WEBRTC_BRANCH}
-    WORKING_DIRECTORY "${WEBRTC_SRC}"
+    COMMAND gclient sync -D --no-history --nohooks -j16
+    WORKING_DIRECTORY "${WEBRTC_DIR}"
 )
 
-message(STATUS "WebRTC: sync")
+message(STATUS "WebRTC: Patching DEPS")
+set(DEPS_FILE "${WEBRTC_SRC}/DEPS")
+if(EXISTS "${DEPS_FILE}")
+    file(READ "${DEPS_FILE}" DEPS_CONTENT)
+    string(REPLACE 
+        "'src/resources']," 
+        "'src/resources'], 'condition': 'False'," 
+        DEPS_CONTENT 
+        "${DEPS_CONTENT}"
+    )
+    file(WRITE "${DEPS_FILE}" "${DEPS_CONTENT}")
+else()
+    message(WARNING "WebRTC: DEPS file not found. Optimization skipped.")
+endif()
+
+message(STATUS "WebRTC: Final Sync (Artifacts)")
 execute_command(
-    COMMAND gclient sync
+    COMMAND gclient sync -D --no-history -j16
     WORKING_DIRECTORY "${WEBRTC_DIR}"
 )
 
@@ -237,7 +250,7 @@ if (PATCHES)
         message(STATUS "Applying ${PATCH}")
 
         execute_process(
-            COMMAND git apply
+            COMMAND git apply --ignore-whitespace
             WORKING_DIRECTORY "${WEBRTC_SRC}"
             INPUT_FILE "${PATCH}"
             OUTPUT_VARIABLE OUTPUT
@@ -258,16 +271,39 @@ is_clang=true \
 is_debug=false \
 is_component_build=false \
 treat_warnings_as_errors=false \
+rtc_include_opus=false \
+rtc_opus_support_120ms_ptime=false \
+rtc_opus_variable_complexity=false \
+rtc_exclude_audio_processing_module=true \
 rtc_build_tools=false \
-rtc_use_perfetto=false \
-rtc_use_pipewire=false \
-rtc_enable_protobuf=false \
 rtc_build_examples=false \
+rtc_use_x11=false \
+rtc_use_x11_extensions=false \
+rtc_use_pipewire=false \
+rtc_link_pipewire=false \
+rtc_use_h264=false \
+rtc_include_builtin_audio_codecs=false \
+rtc_enable_win_wgc=false \
+rtc_build_libvpx=false \
+rtc_build_opus=false \
+rtc_libvpx_build_vp9=false \
+rtc_include_pulse_audio=false \
+rtc_include_internal_audio_device=false \
+rtc_use_perfetto=false \
+rtc_enable_protobuf=false \
 rtc_include_tests=false \
+rtc_include_dav1d_in_internal_decoder_factory=false \
+rtc_enable_google_benchmarks=false \
 use_rtti=true \
-rtc_use_h264=true \
-ffmpeg_branding=\"Chrome\" \
-symbol_level=0")
+symbol_level=0 \
+use_dbus=false \
+use_udev=false \
+proprietary_codecs=false \
+enable_libaom=false \
+enable_freetype=false \
+libyuv_disable_jpeg=true \
+libyuv_disable_rvv=true \
+libyuv_include_tests=false")
 
 if(APPLE)
     set(COMPILE_ARGS "${COMPILE_ARGS} mac_deployment_target=\"${CMAKE_OSX_DEPLOYMENT_TARGET}\"")
@@ -287,7 +323,7 @@ execute_command(
 message(STATUS "WebRTC: compile")
 if(APPLE)
     execute_command(
-        COMMAND ninja -C "${WEBRTC_BUILD}" :default api/audio_codecs:builtin_audio_decoder_factory api/task_queue:default_task_queue_factory sdk:native_api sdk:default_codec_factory_objc pc:peer_connection sdk:videocapture_objc
+        COMMAND ninja -C "${WEBRTC_BUILD}" :default api/task_queue:default_task_queue_factory sdk:native_api pc:peer_connection
         WORKING_DIRECTORY "${WEBRTC_SRC}"
     )
 

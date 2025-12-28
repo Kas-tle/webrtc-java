@@ -1,0 +1,30 @@
+name: "Gradle Test"
+
+description: "Test the platform dependent Java library"
+
+inputs:
+  platform-name:
+    description: "The target platform."
+    required: true
+  platform-arch:
+    description: "The target platform architecture."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: ./.github/actions/download-artifact
+      with:
+        name: webrtc-java-jni-${{ inputs.platform-name }}-${{ inputs.platform-arch }}
+        path: artifacts
+
+    - name: Test
+      run: |
+        JNI_PATH=$(find ~+/artifacts -name "*.jar")
+        ./gradlew :webrtc:test -PprebuiltJniPath="$JNI_PATH" \
+          --no-daemon \
+          --console=plain \
+          -Dorg.gradle.native=false \
+          -Dorg.gradle.vfs.watch=false \
+          --stacktrace
+      shell: bash

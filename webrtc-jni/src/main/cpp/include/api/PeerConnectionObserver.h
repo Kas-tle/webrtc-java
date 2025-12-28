@@ -36,9 +36,6 @@ namespace jni
 			// PeerConnectionObserver implementation.
 			void OnConnectionChange(webrtc::PeerConnectionInterface::PeerConnectionState state) override;
 			void OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState state) override;
-			void OnTrack(webrtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver) override;
-			void OnAddTrack(webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver, const std::vector<webrtc::scoped_refptr<webrtc::MediaStreamInterface>> & streams) override;
-			void OnRemoveTrack(webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) override;
 			void OnDataChannel(webrtc::scoped_refptr<webrtc::DataChannelInterface> channel) override;
 			void OnRenegotiationNeeded() override;
 			void OnIceConnectionChange(webrtc::PeerConnectionInterface::IceConnectionState state) override;
@@ -56,9 +53,6 @@ namespace jni
 
 					jmethodID onConnectionChange;
 					jmethodID onSignalingChange;
-					jmethodID onTrack;
-					jmethodID onAddTrack;
-					jmethodID onRemoveTrack;
 					jmethodID onDataChannel;
 					jmethodID onRenegotiationNeeded;
 					jmethodID onIceConnectionChange;

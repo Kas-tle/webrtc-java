@@ -20,9 +20,6 @@
 #include "JavaString.h"
 #include "JNI_WebRTC.h"
 
-#include "rtc_base/ref_count.h"
-#include "rtc_base/rtc_certificate_generator.h"
-
 namespace jni
 {
 	namespace RTCCertificatePEM

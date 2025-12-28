@@ -3,115 +3,283 @@ name: Build
 on:
   push:
     branches:
-      - main
-    paths:
-      - "**.cpp"
-      - "**.h"
-      - "**.java"
-
+      - "**"
+    paths-ignore:
+      - ".github/ISSUE_TEMPLATE/*.yml"
+      - ".gitignore"
+      - "CONTRIBUTING.md"
+      - "LICENSE"
+      - "NOTICE"
+      - "README.md"
   pull_request:
-    branches:
-      - main
-
   workflow_dispatch:
-
-env:
-  WEBRTC_CACHE_BRANCH: 7339
-  WEBRTC_CHECKOUT_FOLDER: webrtc
-  WEBRTC_INSTALL_FOLDER: webrtc/build
 
 jobs:
   build-windows:
+    name: Build Windows
     strategy:
       fail-fast: false
       matrix:
         platform:
-          - name: windows_x86_64
+          - name: windows
+            arch: x86_64
             runs-on: windows-2022
-        java: [17]
+          - name: windows
+            arch: aarch64
+            runs-on: windows-2022
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - id: prepare
-        name: Prepare build
-        uses: ./.github/actions/prepare-windows
-
-      - id: maven-build
-        name: Maven build
-        uses: ./.github/actions/build
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        name: Checkout Repository
+      - uses: ./.github/actions/prepare-windows
+        name: Prepare Windows
+      - uses: ./.github/actions/setup-gradle
         with:
-          java-version: ${{ matrix.java }}
+          gradle-cache-read-only: ${{ github.event_name == 'pull_request' }}
+        name: Setup Gradle
+      - uses: ./.github/actions/build
+        with:
           platform-name: ${{ matrix.platform.name }}
-          maven-username: ${{ secrets.MAVEN_USERNAME }}
-          maven-password: ${{ secrets.MAVEN_TOKEN }}
+          platform-arch: ${{ matrix.platform.arch }}
+        name: Build
+
+  test-windows:
+    name: Test Windows
+    needs: build-windows
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: windows
+            arch: x86_64
+            runs-on: windows-2022
+          - name: windows
+            arch: x86_64
+            runs-on: windows-2025
+          - name: windows
+            arch: aarch64
+            runs-on: windows-11-arm
+    runs-on: ${{ matrix.platform.runs-on }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        name: Checkout Repository
+      - uses: ./.github/actions/setup-gradle
+        name: Setup Gradle
+      - uses: ./.github/actions/test
+        with:
+          platform-name: ${{ matrix.platform.name }}
+          platform-arch: ${{ matrix.platform.arch }}
+        name: Test
 
   build-linux:
+    name: Build Linux
     strategy:
       fail-fast: false
       matrix:
         platform:
-          - name: linux_arm
+          - name: linux
+            arch: aarch32
             runs-on: ubuntu-22.04
-          - name: linux_arm64
+          - name: linux
+            arch: aarch64
             runs-on: ubuntu-22.04
-          - name: linux_x86-64
+          - name: linux
+            arch: x86_64
             runs-on: ubuntu-22.04
-        java: [17]
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - id: prepare
-        name: Prepare build
-        uses: ./.github/actions/prepare-linux
-
-      - id: maven-build
-        name: Maven build
-        uses: ./.github/actions/build
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        name: Checkout Repository
+      - uses: ./.github/actions/prepare-linux
         with:
-          java-version: ${{ matrix.java }}
+          platform-arch: ${{ matrix.platform.arch }}
+        name: Prepare Linux
+      - uses: ./.github/actions/setup-gradle
+        with:
+          gradle-cache-read-only: ${{ github.event_name == 'pull_request' }}
+        name: Setup Gradle
+      - uses: ./.github/actions/build
+        with:
           platform-name: ${{ matrix.platform.name }}
-          maven-username: ${{ secrets.MAVEN_USERNAME }}
-          maven-password: ${{ secrets.MAVEN_TOKEN }}
+          platform-arch: ${{ matrix.platform.arch }}
+        name: Build
+
+  test-linux:
+    name: Test Linux
+    needs: build-linux
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: linux
+            arch: aarch32
+            runs-on: ubuntu-22.04-arm
+            java-arch: armv7
+          - name: linux
+            arch: aarch32
+            runs-on: ubuntu-24.04-arm
+            java-arch: armv7
+          - name: linux
+            arch: aarch64
+            runs-on: ubuntu-22.04-arm
+            java-arch: aarch64
+          - name: linux
+            arch: aarch64
+            runs-on: ubuntu-24.04-arm
+            java-arch: aarch64
+          - name: linux
+            arch: x86_64
+            runs-on: ubuntu-22.04
+            java-arch: x64
+          - name: linux
+            arch: x86_64
+            runs-on: ubuntu-24.04
+            java-arch: x64
+    runs-on: ${{ matrix.platform.runs-on }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        name: Checkout Repository
+      - uses: ./.github/actions/setup-gradle
+        with:
+          java-architecture: ${{ matrix.platform.java-arch }}
+        name: Setup Gradle
+      - uses: ./.github/actions/test
+        with:
+          platform-name: ${{ matrix.platform.name }}
+          platform-arch: ${{ matrix.platform.arch }}
+        name: Test
 
   build-macos:
+    name: Build macOS
     strategy:
       fail-fast: false
       matrix:
         platform:
-          - name: macos_x86-64
+          - name: macos
+            arch: x86_64
             runs-on: macos-14
-          - name: macos_arm64
+          - name: macos
+            arch: aarch64
             runs-on: macos-14
-        java: [17]
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - id: prepare-build
-        name: Prepare build
-        uses: ./.github/actions/prepare-macos
-
-      - id: maven-build-arm64
-        name: Maven build - Apple Silicon
-        if: matrix.platform.name == 'macos_arm64'
-        uses: ./.github/actions/build
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        name: Checkout Repository
+      - uses: ./.github/actions/prepare-macos
+        name: Prepare macOS
+      - uses: ./.github/actions/setup-gradle
         with:
-          java-version: ${{ matrix.java }}
-          platform-name: ${{ matrix.platform.name }}
-          maven-username: ${{ secrets.MAVEN_USERNAME }}
-          maven-password: ${{ secrets.MAVEN_TOKEN }}
-
-      - id: maven-build-x86_64
-        name: Maven build - Intel
-        if: matrix.platform.name == 'macos_x86-64'
-        uses: ./.github/actions/build-macos-x86_64
+          gradle-cache-read-only: ${{ github.event_name == 'pull_request' }}
+        name: Setup Gradle
+      - uses: ./.github/actions/build
         with:
-          java-version: ${{ matrix.java }}
           platform-name: ${{ matrix.platform.name }}
-          maven-username: ${{ secrets.MAVEN_USERNAME }}
-          maven-password: ${{ secrets.MAVEN_TOKEN }}
+          platform-arch: ${{ matrix.platform.arch }}
+        name: Build
+
+  test-macos:
+    name: Test macOS
+    needs: build-macos
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: macos
+            arch: x86_64
+            runs-on: macos-15-intel
+          - name: macos
+            arch: aarch64
+            runs-on: macos-14
+          - name: macos
+            arch: aarch64
+            runs-on: macos-15
+          - name: macos
+            arch: aarch64
+            runs-on: macos-26
+    runs-on: ${{ matrix.platform.runs-on }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        name: Checkout Repository
+      - uses: ./.github/actions/setup-gradle
+        name: Setup Gradle
+      - uses: ./.github/actions/test
+        with:
+          platform-name: ${{ matrix.platform.name }}
+          platform-arch: ${{ matrix.platform.arch }}
+        name: Test
+
+  detect-release:
+    name: Detect Release
+    needs:
+      - test-windows
+      - test-linux
+      - test-macos
+    if: ${{ success() && github.repository == 'Kas-tle/webrtc-java' && github.ref_name == 'master' }}
+    runs-on: ubuntu-22.04
+    outputs:
+      unreleased: ${{ steps.version.outputs.unreleased }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          fetch-depth: "0"
+        name: Checkout Repository
+      - name: Get Release Version
+        id: version
+        run: |
+          version=$(cat gradle.properties | grep version= | cut -d'=' -f2)
+          echo "version=$version" >> $GITHUB_OUTPUT
+          unreleased=$(git show-ref --tags --verify --quiet "refs/tags/${version}" && echo false || echo true)
+          echo "unreleased=$unreleased" >> $GITHUB_OUTPUT
+        shell: bash
+
+  release:
+    name: Release and Publish
+    needs:
+      - detect-release
+    if: ${{ success() && github.repository == 'Kas-tle/webrtc-java' && github.ref_name == 'master' && needs.detect-release.outputs.unreleased == 'true' }}
+    runs-on: ubuntu-22.04
+    outputs:
+      release_id: ${{ steps.release.outputs.releaseID }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        name: Checkout Repository
+      - uses: ./.github/actions/setup-gradle
+        name: Setup Gradle
+      - uses: ./.github/actions/publish
+        env:
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+        name: Publish to Maven Central
+      - uses: Kas-tle/base-release-action@65d06f835be34757c6d73c16959c97e92c2a3c7f
+        id: release
+        with:
+          files: |
+            webrtc/build/libs/*.jar
+            native-staging/**/*.jar
+          appID: ${{ secrets.RELEASE_APP_ID }}
+          appPrivateKey: ${{ secrets.RELEASE_APP_PK }}
+          discordWebhook: ${{ secrets.DISCORD_WEBHOOK }}
+          tagBase: ${{ needs.detect-release.outputs.version }}
+          tagIncrement: false
+          tagSeparator: ""
+          tagPrefix: ""
+          releaseName: ${{ needs.detect-release.outputs.version }}
+          releaseBodyDependencyUsage: "java"
+          releaseBodyDependencyJavaGroupId: "dev.kastle.webrtc"
+          releaseBodyDependencyJavaArtifactId: "webrtc-java"
+        name: Create Release
+
+  upload-logs:
+    name: Upload Logs
+    runs-on: ubuntu-22.04
+    needs: release
+    if: ${{ success() && github.repository == 'Kas-tle/webrtc-java' && github.ref_name == 'master' }}
+    steps:
+      - uses: Kas-tle/release-build-log-action@1b57448eaf9476e6e05450e4ea240449eac2c0d2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          releaseID: ${{ needs.release.outputs.release_id }}
+        name: Upload Build Logs to Release

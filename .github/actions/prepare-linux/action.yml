@@ -1,6 +1,11 @@
-name: 'Prepare Linux Build'
+name: "Prepare Linux Build"
 
-description: 'Frees up disk space and installs required packages for Linux builds.'
+description: "Frees up disk space and installs required packages for Linux builds."
+
+inputs:
+  platform-arch:
+    description: "The target platform architecture."
+    required: true
 
 runs:
   using: "composite"
@@ -31,7 +36,7 @@ runs:
     - name: Install required packages
       run: |
         sudo apt update
-        sudo apt install -y binutils cmake git locales lsb-release ninja-build pipewire pipewire-pulse pkg-config python3 python3-setuptools rsync unzip wget xz-utils
+        sudo apt install -y binutils cmake git locales lsb-release ninja-build pkg-config python3 python3-setuptools rsync unzip wget xz-utils
 
         # Chromium Clang to be used with the clang toolchain file
         #curl -s https://raw.githubusercontent.com/chromium/chromium/main/tools/clang/scripts/update.py | python3 - --output-dir=/opt/clang
@@ -41,29 +46,29 @@ runs:
         sudo tar -xvf clang-llvmorg-20-init-9764-gb81d8e90-72.tar.xz -C /opt/clang
       shell: bash
 
-    - name: Install required packages for x86-64
-      if: matrix.platform.name == 'linux_x86-64'
+    - name: Install required packages for linux-x86_64
+      if: inputs.platform-arch == 'x86_64'
       run: |
         sudo mkdir /opt/sysroot
         python3 webrtc-jni/src/main/cpp/dependencies/webrtc/linux/sysroot/install-sysroot.py --arch=amd64
         sudo mv webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian* /opt/sysroot/
       shell: bash
 
-    - name: Install required packages for arm
-      if: matrix.platform.name == 'linux_arm'
+    - name: Install required packages for linux-aarch32
+      if: inputs.platform-arch == 'aarch32'
       run: |
         sudo apt install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-        
+
         sudo mkdir /opt/sysroot
         python3 webrtc-jni/src/main/cpp/dependencies/webrtc/linux/sysroot/install-sysroot.py --arch=armhf
         sudo mv webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian* /opt/sysroot/
       shell: bash
 
-    - name: Install required packages for arm64
-      if: matrix.platform.name == 'linux_arm64'
+    - name: Install required packages for linux-aarch64
+      if: inputs.platform-arch == 'aarch64'
       run: |
         sudo apt install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-        
+
         sudo mkdir /opt/sysroot
         python3 webrtc-jni/src/main/cpp/dependencies/webrtc/linux/sysroot/install-sysroot.py --arch=arm64
         sudo mv webrtc-jni/src/main/cpp/dependencies/webrtc/linux/debian* /opt/sysroot/

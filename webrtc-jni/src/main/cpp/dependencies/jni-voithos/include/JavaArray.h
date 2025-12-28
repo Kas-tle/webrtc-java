@@ -9,7 +9,6 @@
 #define JNI_JAVA_ARRAY_H_
 
 #include "Exception.h"
-#include "JavaClass.h"
 #include "JavaRef.h"
 
 #include <jni.h>

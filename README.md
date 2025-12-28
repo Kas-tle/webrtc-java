@@ -1,37 +1,38 @@
-[![Build Status](https://img.shields.io/github/actions/workflow/status/devopvoid/webrtc-java/build.yml?label=Build&logo=github)](https://github.com/devopvoid/webrtc-java/actions)
-[![Maven Central](https://img.shields.io/maven-central/v/dev.onvoid.webrtc/webrtc-java?label=Maven%20Central&logo=apache-maven)](https://search.maven.org/artifact/dev.onvoid.webrtc/webrtc-java)
+This is a fork of devopvoid's [webrtc-java](https://github.com/devopvoid/webrtc-java) library, a Java wrapper for the [WebRTC Native API](https://webrtc.github.io/webrtc-org/native-code/native-apis).
 
-<p align="center">
-  <img alt="webrtc-java" width="100px" src="https://jrtc.dev/logo.png" />
-  <h2 align="center">Connecting the Java world through WebRTC</h2>
-</p>
+## Differences from the Original Project
 
-webrtc-java is a Java wrapper for the [WebRTC Native API](https://webrtc.github.io/webrtc-org/native-code/native-apis), providing similar functionality to the [W3C JavaScript API](https://w3c.github.io/webrtc-pc). It allows Java developers to build real-time communication applications for desktop platforms without having to work directly with native code.
+This stripped down version of the library removes audio and video support, focusing solely on data channels for peer-to-peer data exchange. It is intended for use cases where only data transfer is required, such as multiplayer gaming or real-time data synchronization. The removal of media capabilities results in a significantly smaller library size and increased portability.
 
-The library provides a comprehensive set of Java classes that map to the WebRTC C++ API, making it possible to establish peer-to-peer connections, transmit audio and video, share screens, and exchange arbitrary data between applications.
+It also adds support for ARM Windows systems, and has testing coverage for all platforms via GitHub Actions.
 
-## Features
+## Usage
 
-- **Complete WebRTC API implementation** - Includes peer connections, media devices, data channels, and more
-- **Cross-platform support** - Works on Windows, macOS, and Linux (x64, ARM, ARM64)
-- **Media capabilities** - Audio and video capture from cameras and microphones
-- **Desktop capture** - Screen and application window sharing
-- **Data channels** - Bidirectional peer-to-peer data exchange
-- **Statistics API** - Detailed metrics for monitoring connection quality
-- **Simple integration** - Available as a Maven dependency
-- **Native performance** - Thin JNI layer with minimal overhead
+The base project is published under the group `dev.kastle.webrtc` and artifact `webrtc-java`. The native libraries are published under the same group and artifact with platform-specific classifiers:
 
-## Getting Started
+- `linux-x86_64`
+- `linux-aarch32`
+- `linux-aarch64`
+- `windows-x86_64`
+- `windows-aarch64`
+- `macos-x86_64`
+- `macos-aarch64`
 
-For more detailed information, check out the documentation:
+Note that the natives are not bundled with the main library, so you will need to appropriately include those that are needed for your project. If your project is an executable jar, you may want to read [JEP-472](https://openjdk.org/jeps/472). Because this project uses JNI, you may need to enable native access, depending on your Java version and execution environment. The main module is named `dev.kastle.webrtc`, and the natives modules are named `dev.kastle.webrtc.natives.<platform>` (e.g. `dev.kastle.webrtc.natives.linux.x86_64`), with any hyphens replaced by periods.
 
-- [Quickstart](https://jrtc.dev/guide/get-started) - Get up and running quickly with webrtc-java
-- [Guides](https://jrtc.dev/guide/) - Comprehensive documentation on using the library
-- [Examples](https://jrtc.dev/guide/examples) - Sample code demonstrating various features
-- [Build Notes](https://jrtc.dev/guide/build) - Instructions for building the library from source
+## Development
+
+The project has a preconfigured `.vscode` setup for easy development. Make sure to install the recommended extensions when prompted. Run the `./gradlew build` command to build the project. Note that building the native libraries requires [clang](https://clang.llvm.org/get_started.html) and [cmake](https://cmake.org/download/) to be installed and on your path.
+
+The initial build will take significant time to compile, as cloning the WebRTC source code brings in multiple other repo source trees from the Chromium project, requiring about 30 GB of disk space. On Windows, you may need to set `WEBRTC_CHECKOUT_FOLDER` to a shorter path to avoid exceeding file path length limits.
+
+The version of WebRTC used can be changed by modifying the `webrtc.branch` property in [`webrtc-jni/gradle.properties`](webrtc-jni/gradle.properties). Note, however, that changing the version used will likely require updating the patches in [`webrtc-jni/src/main/cpp/dependencies/webrtc/patches/`](webrtc-jni/src/main/cpp/dependencies/webrtc/patches/) to ensure successful compilation.
 
 ## License
 
+This copyright notice is maintained from the original project:
+
+```md
 Copyright (c) 2019 Alex Andres
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
@@ -39,3 +40,4 @@ Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+```

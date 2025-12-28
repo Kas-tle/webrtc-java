@@ -15,7 +15,6 @@
  */
 
 #include "WebRTCContext.h"
-#include "api/DataBufferFactory.h"
 #include "api/RTCStats.h"
 #include "Exception.h"
 #include "JavaClassLoader.h"
@@ -27,36 +26,13 @@
 
 #include "api/environment/environment_factory.h"
 #include "api/peer_connection_interface.h"
-#include "modules/desktop_capture/desktop_capturer.h"
 #include "rtc_base/ssl_adapter.h"
-
-#ifdef _WIN32
-#include <windows.h>
-#include "media/audio/windows/WindowsAudioDeviceManager.h"
-#include "media/video/windows/WindowsVideoDeviceManager.h"
-#include "media/video/desktop/windows/WindowsPowerManagement.h"
-#endif
-#ifdef __linux__
-#include "media/audio/linux/PulseAudioDeviceManager.h"
-#include "media/video/linux/V4l2VideoDeviceManager.h"
-#include "media/video/desktop/linux/LinuxPowerManagement.h"
-#endif
-#ifdef __APPLE__
-#include "media/audio/macos/CoreAudioDeviceManager.h"
-#include "media/video/macos/AVFVideoDeviceManager.h"
-#include "media/video/desktop/macos/MacOSPowerManagement.h"
-#endif
-
-#include <memory>
 
 namespace jni
 {
 	WebRTCContext::WebRTCContext(JavaVM * vm) :
 		JavaContext(vm),
-		webrtcEnv(webrtc::CreateEnvironment()),
-		audioDevManager(nullptr),
-		videoDevManager(nullptr),
-		powerManagement(nullptr)
+		webrtcEnv(webrtc::CreateEnvironment())
 	{
 	}
 
@@ -67,13 +43,9 @@ namespace jni
 		}
 		
 		JavaEnums::add<webrtc::LoggingSeverity>(env, PKG_LOG"Logging$Severity");
-		JavaEnums::add<webrtc::MediaType>(env, PKG_MEDIA"MediaType");
 		JavaEnums::add<webrtc::DataChannelInterface::DataState>(env, PKG"RTCDataChannelState");
-		JavaEnums::add<webrtc::DesktopCapturer::Result>(env, PKG_DESKTOP"DesktopCapturer$Result");
 		JavaEnums::add<webrtc::DtlsTransportState>(env, PKG"RTCDtlsTransportState");
 		JavaEnums::add<webrtc::DtxStatus>(env, PKG"RTCDtxStatus");
-		JavaEnums::add<webrtc::MediaSourceInterface::SourceState>(env, PKG_MEDIA"MediaSource$State");
-		JavaEnums::add<webrtc::MediaStreamTrackInterface::TrackState>(env, PKG_MEDIA"MediaStreamTrackState");
 		JavaEnums::add<webrtc::PeerConnectionInterface::BundlePolicy>(env, PKG"RTCBundlePolicy");
 		JavaEnums::add<webrtc::PeerConnectionInterface::IceConnectionState>(env, PKG"RTCIceConnectionState");
 		JavaEnums::add<webrtc::PeerConnectionInterface::IceGatheringState>(env, PKG"RTCIceGatheringState");
@@ -82,29 +54,13 @@ namespace jni
 		JavaEnums::add<webrtc::PeerConnectionInterface::RtcpMuxPolicy>(env, PKG"RTCRtcpMuxPolicy");
 		JavaEnums::add<webrtc::PeerConnectionInterface::SignalingState>(env, PKG"RTCSignalingState");
 		JavaEnums::add<webrtc::PeerConnectionInterface::TlsCertPolicy>(env, PKG"TlsCertPolicy");
-		JavaEnums::add<webrtc::RtpTransceiverDirection>(env, PKG"RTCRtpTransceiverDirection");
 		JavaEnums::add<webrtc::SdpType>(env, PKG"RTCSdpType");
-		JavaEnums::add<webrtc::AudioDeviceModule::AudioLayer>(env, PKG_AUDIO"AudioLayer");
-		JavaEnums::add<webrtc::AudioProcessing::Config::GainController1::Mode>(env, PKG_AUDIO"AudioProcessingConfig$GainController$Mode");
-		JavaEnums::add<webrtc::AudioProcessing::Config::GainController1::AnalogGainController::ClippingPredictor::Mode>(env, PKG_AUDIO"AudioProcessingConfig$GainController$AnalogGainController$ClippingPredictor$Mode");
-		JavaEnums::add<webrtc::AudioProcessing::Config::Pipeline::DownmixMethod>(env, PKG_AUDIO"AudioProcessingConfig$Pipeline$DownmixMethod");
-		JavaEnums::add<webrtc::AudioProcessing::Config::NoiseSuppression::Level>(env, PKG_AUDIO"AudioProcessingConfig$NoiseSuppression$Level");
 		JavaEnums::add<jni::RTCStats::RTCStatsType>(env, PKG"RTCStatsType");
-		JavaEnums::add<jni::avdev::DeviceFormFactor>(env, PKG_MEDIA"DeviceFormFactor");
-		JavaEnums::add<jni::avdev::DeviceTransport>(env, PKG_MEDIA"DeviceTransport");
-		JavaEnums::add<jni::avdev::AudioDeviceDirectionType>(env, PKG_MEDIA"AudioDeviceDirectionType");
 
-		JavaFactories::add<webrtc::AudioSourceInterface>(env, PKG_MEDIA"audio/AudioTrackSource");
-		JavaFactories::add<webrtc::AudioTrackInterface>(env, PKG_MEDIA"audio/AudioTrack");
-		JavaFactories::add<webrtc::VideoTrackInterface>(env, PKG_MEDIA"video/VideoTrack");
-		JavaFactories::add<webrtc::MediaStreamInterface>(env, PKG_MEDIA"MediaStream");
 		JavaFactories::add<webrtc::DataChannelInterface>(env, PKG"RTCDataChannel");
 		JavaFactories::add<webrtc::DtlsTransportInterface>(env, PKG"RTCDtlsTransport");
 		JavaFactories::add<webrtc::IceTransportInterface>(env, PKG"RTCIceTransport");
 		JavaFactories::add<webrtc::PeerConnectionInterface>(env, PKG"RTCPeerConnection");
-		JavaFactories::add<webrtc::RtpReceiverInterface>(env, PKG"RTCRtpReceiver");
-		JavaFactories::add<webrtc::RtpSenderInterface>(env, PKG"RTCRtpSender");
-		JavaFactories::add<webrtc::RtpTransceiverInterface>(env, PKG"RTCRtpTransceiver");
 
 		initializeClassLoader(env, PKG_INTERNAL"NativeClassLoader");
 	}
@@ -129,80 +85,5 @@ namespace jni
 		if (!webrtc::CleanupSSL()) {
 			env->Throw(jni::JavaError(env, "Cleanup SSL failed"));
 		}
-
-		audioDevManager = nullptr;
-		videoDevManager = nullptr;
-	}
-
-	avdev::AudioDeviceManager * WebRTCContext::getAudioDeviceManager()
-	{
-		std::unique_lock<std::mutex> mlock(aMutex);
-
-		if (audioDevManager == nullptr) {
-			initializeAudioManager();
-		}
-
-		return audioDevManager.get();
-	}
-
-	avdev::VideoDeviceManager * WebRTCContext::getVideoDeviceManager()
-	{
-		std::unique_lock<std::mutex> mlock(vMutex);
-
-		if (videoDevManager == nullptr) {
-			initializeVideoManager();
-		}
-
-		return videoDevManager.get();
-	}
-
-	avdev::PowerManagement * WebRTCContext::getPowerManagement()
-    {
-    	std::unique_lock<std::mutex> mlock(vMutex);
-
-    	if (powerManagement == nullptr) {
-    		initializePowerManagement();
-    	}
-
-    	return powerManagement.get();
-    }
-
-	void WebRTCContext::initializeAudioManager()
-	{
-#ifdef _WIN32
-		audioDevManager = std::make_unique<avdev::WindowsAudioDeviceManager>();
-#endif
-#ifdef __linux__
-		audioDevManager = std::make_unique<avdev::PulseAudioDeviceManager>();
-#endif
-#ifdef __APPLE__
-		audioDevManager = std::make_unique<avdev::CoreAudioDeviceManager>();
-#endif
-	}
-
-	void WebRTCContext::initializeVideoManager()
-	{
-#ifdef _WIN32
-		videoDevManager = std::make_unique<avdev::WindowsVideoDeviceManager>();
-#endif
-#ifdef __linux__
-		videoDevManager = std::make_unique<avdev::V4l2VideoDeviceManager>();
-#endif
-#ifdef __APPLE__
-		videoDevManager = std::make_unique<avdev::AVFVideoDeviceManager>();
-#endif
-	}
-
-	void WebRTCContext::initializePowerManagement()
-	{
-#ifdef _WIN32
-		powerManagement = std::make_unique<avdev::WindowsPowerManagement>();
-#endif
-#ifdef __linux__
-		powerManagement = std::make_unique<avdev::LinuxPowerManagement>();
-#endif
-#ifdef __APPLE__
-		powerManagement = std::make_unique<avdev::MacOSPowerManagement>();
-#endif
 	}
 }

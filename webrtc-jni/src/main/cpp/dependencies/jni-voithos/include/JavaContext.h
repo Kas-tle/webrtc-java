@@ -10,7 +10,6 @@
 
 #include "JavaClassUtils.h"
 #include "JavaRef.h"
-#include "JavaString.h"
 
 #include <jni.h>
 #include <list>
