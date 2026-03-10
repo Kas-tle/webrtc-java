@@ -1,6 +1,6 @@
 [![Maven Central Version](https://img.shields.io/maven-central/v/dev.kastle.webrtc/webrtc-java?label=Maven%20Central&color=%233fb950)](https://repo1.maven.org/maven2/dev/kastle/webrtc/webrtc-java/)
 
-This is a fork of devopvoid's [webrtc-java](https://github.com/devopvoid/webrtc-java) library, a Java wrapper for the [WebRTC Native API](https://webrtc.github.io/webrtc-org/native-code/native-apis).
+This is a fork of devopvoid's [webrtc-java](https://github.com/devopvoid/webrtc-java) library, a Java wrapper for the [WebRTC Native API](https://webrtc.github.io/webrtc-org/native-code/native-apis). You can join the [Discord](https://discord.gg/5z4GuSnqmQ) for help with this fork.
 
 ## Differences from the Original Project
 
