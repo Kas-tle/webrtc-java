@@ -32,6 +32,7 @@ JNIEXPORT void JNICALL Java_dev_kastle_webrtc_PeerConnectionFactory_initialize
         env->Throw(jni::JavaRuntimeException(env, "Start network thread failed"));
         return;
     }
+    SetHandle(env, caller, "networkThreadHandle", networkThread.get());
 
     std::unique_ptr<webrtc::Thread> signalingThread = webrtc::Thread::Create();
     signalingThread->SetName("webrtc_jni_signaling_thread", nullptr);
@@ -39,6 +40,7 @@ JNIEXPORT void JNICALL Java_dev_kastle_webrtc_PeerConnectionFactory_initialize
         env->Throw(jni::JavaRuntimeException(env, "Start signaling thread failed"));
         return;
     }
+    SetHandle(env, caller, "signalingThreadHandle", signalingThread.get());
 
     std::unique_ptr<webrtc::Thread> workerThread = webrtc::Thread::Create();
     workerThread->SetName("webrtc_jni_worker_thread", nullptr);
@@ -46,6 +48,7 @@ JNIEXPORT void JNICALL Java_dev_kastle_webrtc_PeerConnectionFactory_initialize
         env->Throw(jni::JavaRuntimeException(env, "Start worker thread failed"));
         return;
     }
+    SetHandle(env, caller, "workerThreadHandle", workerThread.get());
 
     webrtc::PeerConnectionFactoryDependencies dependencies;
     
