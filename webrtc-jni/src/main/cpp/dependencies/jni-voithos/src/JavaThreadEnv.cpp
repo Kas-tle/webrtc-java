@@ -7,37 +7,33 @@
 
 #include "JavaThreadEnv.h"
 
-#include <iostream>
-#include <thread>
-
 namespace jni
 {
-	JavaThreadEnv::JavaThreadEnv(JavaVM * vm) :
-		vm(vm),
-		env(nullptr)
-	{
-		int status = vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6);
+    JavaThreadEnv::JavaThreadEnv(JavaVM * vm) :
+        vm(vm),
+        env(nullptr),
+        attached(false)
+    {
+        int status = vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6);
 
-		if (status == JNI_EDETACHED) {
-			if (vm->AttachCurrentThread(reinterpret_cast<void**>(&env), NULL) != 0) {
-				std::cout << "VM attach current thread failed" << std::endl;
-			}
-		}
+        if (status == JNI_EDETACHED) {
+            if (vm->AttachCurrentThread(reinterpret_cast<void**>(&env), NULL) == JNI_OK) {
+                attached = true;
+            } else {
+                env = nullptr;
+            }
+        }
+    }
 
-		if (env == nullptr) {
-			std::cout << "Failed to attach thread " << std::this_thread::get_id() << std::endl;
-		}
-	}
+    JavaThreadEnv::~JavaThreadEnv()
+    {
+        if (attached) {
+            vm->DetachCurrentThread();
+        }
+    }
 
-	JavaThreadEnv::~JavaThreadEnv()
-	{
-		vm->DetachCurrentThread();
-
-		//std::cout << "Dettached thread " << std::this_thread::get_id() << std::endl;
-	}
-
-	JNIEnv * JavaThreadEnv::getEnv() const
-	{
-		return env;
-	}
+    JNIEnv * JavaThreadEnv::getEnv() const
+    {
+        return env;
+    }
 }
