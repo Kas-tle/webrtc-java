@@ -29,7 +29,7 @@ jobs:
             runs-on: windows-2022
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         name: Checkout Repository
       - uses: ./.github/actions/prepare-windows
         name: Prepare Windows
@@ -61,7 +61,7 @@ jobs:
             runs-on: windows-11-arm
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
         name: Setup Gradle
@@ -88,7 +88,7 @@ jobs:
             runs-on: ubuntu-22.04
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         name: Checkout Repository
       - uses: ./.github/actions/prepare-linux
         with:
@@ -137,7 +137,7 @@ jobs:
             java-arch: x64
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
         with:
@@ -163,7 +163,7 @@ jobs:
             runs-on: macos-14
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         name: Checkout Repository
       - uses: ./.github/actions/prepare-macos
         name: Prepare macOS
@@ -198,7 +198,7 @@ jobs:
             runs-on: macos-26
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
         name: Setup Gradle
@@ -220,7 +220,7 @@ jobs:
       unreleased: ${{ steps.version.outputs.unreleased }}
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: "0"
         name: Checkout Repository
@@ -242,7 +242,7 @@ jobs:
     outputs:
       release_id: ${{ steps.release.outputs.releaseID }}
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         name: Checkout Repository
       - uses: ./.github/actions/setup-gradle
         name: Setup Gradle
