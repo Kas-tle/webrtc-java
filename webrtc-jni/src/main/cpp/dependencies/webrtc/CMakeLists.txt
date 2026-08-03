@@ -344,6 +344,15 @@ else()
 endif()
 
 if(LINUX)
+        # Ninja only schedules libc++/libc++abi for the target toolchain when
+        # a linked output needs them; a static archive only cross build never
+        # does, so the object globs below would come up empty and produce
+        # hollow archives. Request the archives explicitly.
+        execute_command(
+            COMMAND ninja -C "${WEBRTC_BUILD}" obj/buildtools/third_party/libc++/libc++.a obj/buildtools/third_party/libc++abi/libc++abi.a
+            WORKING_DIRECTORY "${WEBRTC_SRC}"
+        )
+
         # Collect lib++ objects
         file(GLOB_RECURSE LibCPP_OBJS
             ${WEBRTC_SRC}/${WEBRTC_BUILD}/obj/buildtools/third_party/libc++/libc++/*.o
