@@ -343,18 +343,11 @@ JNIEXPORT void JNICALL Java_dev_kastle_webrtc_RTCPeerConnection_removeIceCandida
 	webrtc::PeerConnectionInterface * pc = GetHandle<webrtc::PeerConnectionInterface>(env, caller);
 	CHECK_HANDLE(pc);
 
-	try {
-		auto candidates = jni::JavaArray::toNativeVector<webrtc::Candidate>(env,
-			jni::static_java_ref_cast<jobjectArray>(env, jni::JavaLocalRef<jobject>(env, jCandidates)),
-			&jni::RTCIceCandidate::toNativeCricket);
-
-		if (!pc->RemoveIceCandidates(candidates)) {
-			env->Throw(jni::JavaRuntimeException(env, "Remove ICE candidates from the peer connection failed"));
-		}
-	}
-	catch (...) {
-		ThrowCxxJavaException(env);
-	}
+	// PeerConnectionInterface::RemoveIceCandidates was removed upstream in
+	// newer branches. Kept as a no-op so the Java API stays link compatible;
+	// nothing consuming this fork calls it.
+	(void) pc;
+	(void) jCandidates;
 }
 
 JNIEXPORT jobject JNICALL Java_dev_kastle_webrtc_RTCPeerConnection_getSignalingState
