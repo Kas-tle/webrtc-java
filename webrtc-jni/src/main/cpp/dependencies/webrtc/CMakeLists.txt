@@ -144,7 +144,7 @@ else()
     set(TARGET_LIBCPP_ABI_INC_DIR ${WEBRTC_SRC}/third_party/libc++abi/src/include)
 endif()
 
-if(LINUX AND NOT TARGET_CPU MATCHES "^arm")
+if(LINUX)
     target_include_directories(${PROJECT_NAME} PUBLIC ${TARGET_LIBCPP_BUILDTOOLS_INC_DIR})
     target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${TARGET_LIBCPP_INC_DIR} ${TARGET_LIBCPP_ABI_INC_DIR})
 
@@ -344,7 +344,6 @@ else()
 endif()
 
 if(LINUX)
-    if(LINUX AND NOT TARGET_CPU MATCHES "^arm")
         # Collect lib++ objects
         file(GLOB_RECURSE LibCPP_OBJS
             ${WEBRTC_SRC}/${WEBRTC_BUILD}/obj/buildtools/third_party/libc++/libc++/*.o
@@ -380,7 +379,6 @@ if(LINUX)
             DIRECTORY "${WEBRTC_SRC}/third_party/libc++abi/src/include"
             DESTINATION "${WEBRTC_INSTALL_DIR}/include/third_party/libc++abi"
         )
-    endif()
 endif()
 
 install(FILES "${WEBRTC_LIB_PATH}" DESTINATION "${WEBRTC_INSTALL_DIR}/lib")
