@@ -333,23 +333,6 @@ JNIEXPORT void JNICALL Java_dev_kastle_webrtc_RTCPeerConnection_addIceCandidate
 	}
 }
 
-JNIEXPORT void JNICALL Java_dev_kastle_webrtc_RTCPeerConnection_removeIceCandidates
-(JNIEnv * env, jobject caller, jobject jCandidates)
-{
-	if (jCandidates == nullptr) {
-		return;
-	}
-
-	webrtc::PeerConnectionInterface * pc = GetHandle<webrtc::PeerConnectionInterface>(env, caller);
-	CHECK_HANDLE(pc);
-
-	// PeerConnectionInterface::RemoveIceCandidates was removed upstream in
-	// newer branches. Kept as a no-op so the Java API stays link compatible;
-	// nothing consuming this fork calls it.
-	(void) pc;
-	(void) jCandidates;
-}
-
 JNIEXPORT jobject JNICALL Java_dev_kastle_webrtc_RTCPeerConnection_getSignalingState
 (JNIEnv * env, jobject caller)
 {

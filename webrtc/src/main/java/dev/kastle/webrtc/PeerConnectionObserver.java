@@ -88,14 +88,6 @@ public interface PeerConnectionObserver {
 	}
 
 	/**
-	 * ICE candidates have been removed.
-	 *
-	 * @param candidates The removed ICE candidates.
-	 */
-	default void onIceCandidatesRemoved(RTCIceCandidate[] candidates) {
-	}
-
-	/**
 	 * The remote peer has opened a RTCDataChannel.
 	 *
 	 * @param dataChannel The opened data channel.
