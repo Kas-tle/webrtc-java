@@ -15,7 +15,11 @@ add_library(${PROJECT_NAME} STATIC pseudo.cxx pseudo.hxx)
 
 set(CUSTOM_LIBCXX false)
 
-if(LINUX AND NOT TARGET_CPU MATCHES "^arm")
+if(LINUX)
+    # All Linux targets build against webrtc's bundled libc++, matching the
+    # x86_64 configuration proven in production. The arm sysroots' libstdc++
+    # (Debian bullseye, GCC 10) predates the C++20 library features newer
+    # webrtc branches use; the sysroot stays for the glibc floor only.
     set(CUSTOM_LIBCXX true)
 endif()
 
